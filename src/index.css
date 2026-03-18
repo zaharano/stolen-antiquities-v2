@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  /* Base tones */
+  --color-cream: #F5F0E8;
+  --color-cream-dark: #EBE4D6;
+  --color-parchment: #E6DFD1;
+  --color-sepia: #D4C5A9;
+  --color-sepia-dark: #B8A88A;
+  --color-ink: #2C2416;
+  --color-ink-light: #5C4F3A;
+
+  /* Accent — red */
+  --color-red: #E63B2E;
+  --color-red-bright: #FF4136;
+  --color-red-dark: #B22D23;
+
+  /* Correct-answer green */
+  --color-green: #4A7C59;
+  --color-green-light: #5E9E72;
+
+  /* Scoring / feedback */
+  --color-gold: #C8A951;
+  --color-amber: #D4920B;
+
+  /* Typography */
+  --font-display: 'DM Serif Display', serif;
+  --font-body: 'Source Serif 4', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Base styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Source Serif 4', serif;
+  background-color: #F5F0E8;
+  color: #2C2416;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'DM Serif Display', serif;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+/* Leaflet map — sepia/warm filter to match paper-map aesthetic */
+.leaflet-container {
+  filter: sepia(0.3) saturate(0.85) brightness(1.02);
+}
