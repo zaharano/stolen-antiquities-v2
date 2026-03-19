@@ -8,10 +8,10 @@ L.Icon.Default.mergeOptions({ iconRetinaUrl: "", iconUrl: "", shadowUrl: "" })
 
 // Red pushpin SVG for player guess
 const playerIcon = L.divIcon({
-  html: `<svg width="24" height="36" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  html: `<div style="width:24px;height:36px"><svg width="24" height="36" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24s12-15 12-24C24 5.373 18.627 0 12 0z" fill="#E63B2E"/>
     <circle cx="12" cy="12" r="4" fill="white"/>
-  </svg>`,
+  </svg></div>`,
   className: "",
   iconSize: [24, 36],
   iconAnchor: [12, 36],
@@ -19,10 +19,10 @@ const playerIcon = L.divIcon({
 
 // Muted green pin for correct answer
 const correctIcon = L.divIcon({
-  html: `<svg width="24" height="36" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  html: `<div style="width:24px;height:36px"><svg width="24" height="36" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24s12-15 12-24C24 5.373 18.627 0 12 0z" fill="#4A7C59"/>
     <circle cx="12" cy="12" r="4" fill="white"/>
-  </svg>`,
+  </svg></div>`,
   className: "",
   iconSize: [24, 36],
   iconAnchor: [12, 36],
@@ -118,15 +118,16 @@ export function MapView({
         <Marker position={correctPin} icon={correctIcon} />
       )}
 
-      {/* Dashed line between guess and correct — only on reveal */}
+      {/* Dashed animated line between guess and correct — only on reveal */}
       {showReveal && playerPin && correctPin && (
         <Polyline
           positions={[playerPin, correctPin]}
+          className="leaflet-reveal-line"
           pathOptions={{
             color: "#E63B2E",
             weight: 2,
-            dashArray: "6, 8",
-            opacity: 0.8,
+            dashArray: "6 4",
+            opacity: 0.85,
           }}
         />
       )}

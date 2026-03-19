@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import React, { useEffect } from "react"
 import { useGameState } from "./hooks/useGameState"
 import { SplashScreen } from "./components/SplashScreen"
 import { GameScreen } from "./components/GameScreen"
@@ -32,33 +32,44 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Shared fade-in style applied to every screen so transitions feel smooth
+  const screenStyle: React.CSSProperties = {
+    animation: "screenFadeIn 200ms ease-out",
+  }
+
   if (appPhase === "splash") {
     return (
-      <SplashScreen
-        onBegin={() => initGame()}
-        onPractice={() => initGame({ practice: true })}
-        onViewResults={goToResults}
-      />
+      <div key="splash" style={screenStyle}>
+        <SplashScreen
+          onBegin={() => initGame()}
+          onPractice={() => initGame({ practice: true })}
+          onViewResults={goToResults}
+        />
+      </div>
     )
   }
 
   if (appPhase === "results") {
     if (!gameState) {
       return (
-        <div className="min-h-dvh bg-cream flex items-center justify-center">
+        <div key="results-loading" style={screenStyle} className="min-h-dvh bg-cream flex items-center justify-center">
           <p className="text-ink-light" style={{ fontFamily: "'Source Serif 4', serif" }}>
             Loading…
           </p>
         </div>
       )
     }
-    return <ResultsScreen gameState={gameState} onPlayAgain={resetToSplash} />
+    return (
+      <div key="results" style={screenStyle}>
+        <ResultsScreen gameState={gameState} onPlayAgain={resetToSplash} />
+      </div>
+    )
   }
 
   // playing | reveal
   if (!gameState) {
     return (
-      <div className="min-h-dvh bg-cream flex flex-col items-center justify-center gap-4">
+      <div key="game-loading" style={screenStyle} className="min-h-dvh bg-cream flex flex-col items-center justify-center gap-4">
         <div className="w-8 h-8 border-2 border-sepia border-t-ink-light rounded-full animate-spin" />
         <p className="text-ink-light text-sm" style={{ fontFamily: "'Source Serif 4', serif" }}>
           Loading objects…
@@ -68,14 +79,16 @@ function App() {
   }
 
   return (
-    <GameScreen
-      gameState={gameState}
-      appPhase={appPhase}
-      onSubmitGuess={submitGuess}
-      onSubmitTimeout={submitTimeout}
-      onRevealHint={revealHint}
-      onNextRound={nextRound}
-    />
+    <div key="game" style={screenStyle} className="contents">
+      <GameScreen
+        gameState={gameState}
+        appPhase={appPhase}
+        onSubmitGuess={submitGuess}
+        onSubmitTimeout={submitTimeout}
+        onRevealHint={revealHint}
+        onNextRound={nextRound}
+      />
+    </div>
   )
 }
 

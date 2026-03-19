@@ -66,3 +66,52 @@ h1, h2, h3, h4, h5, h6 {
   from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* Screen fade-in */
+@keyframes screenFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Shimmer animation for image placeholders */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Medal pop animation */
+@keyframes medalPop {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Polyline draw animation */
+@keyframes drawLine {
+  from { stroke-dashoffset: 1000; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Animated polyline drawn on reveal */
+.leaflet-reveal-line {
+  animation: drawLine 700ms ease-in-out forwards;
+  stroke-dasharray: 6, 4;
+  stroke-dashoffset: 1000;
+}
+
+/* Shimmer placeholder */
+.shimmer-placeholder {
+  background: linear-gradient(90deg, #EBE4D6 25%, #F5F0E8 50%, #EBE4D6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* "Tap to enlarge" — only show on touch devices */
+.tap-to-enlarge {
+  display: none;
+}
+@media (hover: none) {
+  .tap-to-enlarge {
+    display: block;
+  }
+}

@@ -111,22 +111,33 @@ export function GameScreen({
 
       {/* ── Mobile: bottom sheet ── */}
       <div
-        className={`lg:hidden fixed bottom-0 left-0 right-0 z-[900] transition-transform duration-200 ease-out ${
-          mobileExpanded ? "translate-y-0" : "translate-y-[calc(100%-100px)]"
-        }`}
-        style={{ maxHeight: "85dvh" }}
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-[900] overflow-hidden bg-parchment border-t border-sepia shadow-2xl"
+        style={{
+          height: mobileExpanded ? "75dvh" : "96px",
+          transition: "height 200ms ease-out",
+        }}
       >
-        {/* Drag handle */}
+        {/* Drag handle — visible pill */}
         <div
-          className="flex justify-center pt-2 pb-1 bg-parchment border-t border-sepia cursor-pointer"
+          className="flex justify-center items-center pt-3 pb-2 cursor-pointer select-none"
           onClick={() => setMobileExpanded((v) => !v)}
           role="button"
           aria-label={mobileExpanded ? "Collapse object panel" : "Expand object panel"}
         >
-          <div className="w-10 h-1 bg-sepia rounded-full" />
+          <div
+            style={{
+              width: "40px",
+              height: "4px",
+              backgroundColor: "#D4C5A9",
+              borderRadius: "9999px",
+            }}
+          />
         </div>
 
-        <div className="overflow-y-auto" style={{ maxHeight: "calc(85dvh - 20px)" }}>
+        <div
+          className="overflow-y-auto"
+          style={{ height: "calc(100% - 28px)" }}
+        >
           <ObjectPanel
             round={round}
             roundNumber={currentRoundIndex + 1}

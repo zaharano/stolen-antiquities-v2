@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { GameRound } from "../types"
 
 interface ObjectPanelProps {
@@ -72,6 +72,11 @@ export function ObjectPanel({
   const [modalOpen, setModalOpen] = useState(false)
   const [imgLoaded, setImgLoaded] = useState(false)
 
+  // Reset image loaded state when the round (and thus the image URL) changes
+  useEffect(() => {
+    setImgLoaded(false)
+  }, [round.seed.objectID])
+
   const hints = getHints(round)
   const totalRounds = 10
 
@@ -92,21 +97,9 @@ export function ObjectPanel({
       )}
 
       <div
-        className="bg-parchment border border-sepia shadow-md flex flex-col h-full"
+        className="bg-parchment flex flex-col h-full"
         style={{ fontFamily: "'Source Serif 4', serif" }}
       >
-        {/* Mobile drag handle / collapsed header */}
-        {onToggleExpand && (
-          <button
-            className="w-full flex items-center gap-3 px-4 py-3 cursor-pointer select-none"
-            onClick={onToggleExpand}
-            aria-expanded={expanded}
-            aria-label={expanded ? "Collapse object panel" : "Expand object panel"}
-          >
-            {/* Drag handle indicator */}
-            <div className="mx-auto w-10 h-1 bg-sepia rounded-full absolute top-2 left-1/2 -translate-x-1/2" />
-          </button>
-        )}
 
         <div className={`flex flex-col flex-1 overflow-y-auto ${!expanded ? "hidden" : ""} lg:flex`}>
           {/* Round indicator */}
@@ -130,29 +123,33 @@ export function ObjectPanel({
           ) : (
             <>
               {/* Object image */}
-              <div className="relative bg-cream overflow-hidden" style={{ aspectRatio: "4/3" }}>
-                {!imgLoaded && (
-                  <div className="absolute inset-0 bg-cream flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-sepia border-t-ink-light rounded-full animate-spin" />
-                  </div>
+              <div className="relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
+                {/* Shimmer placeholder — shown while image is loading */}
+                {!imgLoaded && round.metData.primaryImageSmall && (
+                  <div className="absolute inset-0 shimmer-placeholder" />
                 )}
                 {round.metData.primaryImageSmall ? (
                   <img
                     src={round.metData.primaryImageSmall}
                     alt={round.metData.title}
-                    className={`w-full h-full object-cover cursor-pointer transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+                    className="w-full h-full object-cover cursor-pointer"
+                    style={{
+                      opacity: imgLoaded ? 1 : 0,
+                      transition: "opacity 300ms ease-out",
+                    }}
                     loading="lazy"
                     onLoad={() => setImgLoaded(true)}
                     onClick={() => setModalOpen(true)}
                     title="Click to view full resolution"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-cream">
+                  <div className="w-full h-full flex items-center justify-center bg-cream-dark">
                     <span className="text-sepia-dark text-sm">Image unavailable</span>
                   </div>
                 )}
+                {/* "Tap to enlarge" — only visible on touch devices via CSS */}
                 {round.metData.primaryImage && (
-                  <div className="absolute bottom-2 right-2 bg-ink/60 text-cream text-xs px-2 py-0.5 rounded pointer-events-none">
+                  <div className="tap-to-enlarge absolute bottom-2 right-2 bg-ink/60 text-cream text-xs px-2 py-0.5 rounded pointer-events-none">
                     Tap to enlarge
                   </div>
                 )}

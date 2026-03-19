@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import type { GameRound } from "../types"
 import { MEDAL_EMOJIS } from "../lib/share"
 
@@ -22,10 +22,44 @@ function formatDistance(km: number | null): string {
 }
 
 const MEDAL_LABELS: Record<string, string> = {
-  curator: "Curator",
+  curator: "Perfect",
   close: "Close",
-  continent: "Right Continent",
+  distant: "Distant",
   lost: "Lost",
+}
+
+/** Animates a counter from 0 to `target` over `duration`ms using ease-out cubic. */
+function useCountUp(target: number, duration: number, active: boolean): number {
+  const [displayed, setDisplayed] = useState(0)
+  const rafRef = useRef<number | null>(null)
+  const startRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (!active) {
+      setDisplayed(0)
+      return
+    }
+    startRef.current = null
+
+    function step(timestamp: number) {
+      if (startRef.current === null) startRef.current = timestamp
+      const elapsed = timestamp - startRef.current
+      const progress = Math.min(elapsed / duration, 1)
+      // ease-out cubic: 1 - (1 - progress)^3
+      const eased = Math.round(target * (1 - Math.pow(1 - progress, 3)))
+      setDisplayed(eased)
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(step)
+      }
+    }
+
+    rafRef.current = requestAnimationFrame(step)
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
+    }
+  }, [target, duration, active])
+
+  return displayed
 }
 
 export function RevealOverlay({
@@ -38,17 +72,30 @@ export function RevealOverlay({
   onNext,
 }: RevealOverlayProps) {
   const [nextVisible, setNextVisible] = useState(false)
+  const [statsVisible, setStatsVisible] = useState(false)
 
-  // Delay "next" button appearance after reveal
+  const isReveal = phase === "reveal"
+
+  // Delay "next" button appearance after reveal; trigger stats/animation
   useEffect(() => {
-    if (phase === "reveal") {
+    if (isReveal) {
       setNextVisible(false)
-      const t = setTimeout(() => setNextVisible(true), 1200)
-      return () => clearTimeout(t)
+      setStatsVisible(false)
+      // Small delay so the panel renders first, then animate in stats
+      const tStats = setTimeout(() => setStatsVisible(true), 80)
+      const tNext = setTimeout(() => setNextVisible(true), 1200)
+      return () => {
+        clearTimeout(tStats)
+        clearTimeout(tNext)
+      }
     } else {
       setNextVisible(false)
+      setStatsVisible(false)
     }
-  }, [phase])
+  }, [isReveal])
+
+  // Animate score counting up
+  const animatedScore = useCountUp(round.score ?? 0, 600, statsVisible)
 
   const isLastRound = roundNumber >= totalRounds
 
@@ -85,13 +132,27 @@ export function RevealOverlay({
           </p>
         )}
 
-        {/* Medal + label */}
+        {/* Medal + label — pop in with scale animation */}
         {round.medal && (
           <div className="flex items-center justify-center gap-2 mb-3">
-            <span className="text-2xl">{MEDAL_EMOJIS[round.medal]}</span>
+            <span
+              className="text-2xl"
+              style={{
+                display: "inline-block",
+                animation: statsVisible ? "medalPop 400ms cubic-bezier(0.34,1.56,0.64,1) forwards" : "none",
+                transform: statsVisible ? undefined : "scale(0)",
+                opacity: statsVisible ? undefined : 0,
+              }}
+            >
+              {MEDAL_EMOJIS[round.medal]}
+            </span>
             <span
               className="text-ink text-base"
-              style={{ fontFamily: "'DM Serif Display', serif" }}
+              style={{
+                fontFamily: "'DM Serif Display', serif",
+                opacity: statsVisible ? 1 : 0,
+                transition: "opacity 300ms ease-out 100ms",
+              }}
             >
               {MEDAL_LABELS[round.medal]}
             </span>
@@ -100,7 +161,14 @@ export function RevealOverlay({
 
         {/* Stats row */}
         <div className="flex items-center justify-around border-t border-b border-sepia py-3 mb-4">
-          <div className="text-center">
+          {/* Distance — simple fade */}
+          <div
+            className="text-center"
+            style={{
+              opacity: statsVisible ? 1 : 0,
+              transition: "opacity 400ms ease-out",
+            }}
+          >
             <p
               className="text-ink text-xl font-medium"
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
@@ -110,19 +178,26 @@ export function RevealOverlay({
             <p className="text-ink-light text-xs mt-0.5">distance</p>
           </div>
           <div className="w-px h-8 bg-sepia" />
+          {/* Score — count-up animation */}
           <div className="text-center">
             <p
               className={`text-xl font-medium ${round.score === 1000 ? "text-gold" : "text-ink"}`}
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
-              {round.score ?? 0}
+              {animatedScore}
             </p>
             <p className="text-ink-light text-xs mt-0.5">points</p>
           </div>
           {round.hintsUsed > 0 && (
             <>
               <div className="w-px h-8 bg-sepia" />
-              <div className="text-center">
+              <div
+                className="text-center"
+                style={{
+                  opacity: statsVisible ? 1 : 0,
+                  transition: "opacity 400ms ease-out 200ms",
+                }}
+              >
                 <p
                   className="text-ink text-xl font-medium"
                   style={{ fontFamily: "'JetBrains Mono', monospace" }}
