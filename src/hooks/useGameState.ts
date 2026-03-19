@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 import type { GameState, GameRound, SeedObject } from "../types"
 import { getDailyObjects } from "../lib/daily-selection"
 import { prefetchDailyObjects } from "../lib/met-api"
@@ -10,7 +10,8 @@ export type AppPhase = "splash" | "playing" | "reveal" | "results"
 export interface UseGameStateReturn {
   gameState: GameState | null
   appPhase: AppPhase
-  initGame: () => Promise<void>
+  practiceMode: boolean
+  initGame: (opts?: { practice?: boolean }) => Promise<void>
   submitGuess: (lat: number, lng: number) => void
   submitTimeout: () => void
   revealHint: (hintIndex: number) => void
@@ -22,21 +23,32 @@ export interface UseGameStateReturn {
 export function useGameState(): UseGameStateReturn {
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [appPhase, setAppPhase] = useState<AppPhase>("splash")
+  const [practiceMode, setPracticeMode] = useState(false)
+  const practiceModeRef = useRef(false)
 
-  const initGame = useCallback(async () => {
+  const persist = useCallback((state: GameState) => {
+    if (!practiceModeRef.current) saveGameState(state)
+  }, [])
+
+  const initGame = useCallback(async (opts?: { practice?: boolean }) => {
+    const isPractice = opts?.practice ?? false
+    practiceModeRef.current = isPractice
+    setPracticeMode(isPractice)
+
     const dateString = getTodayDateString()
 
-    // Check for in-progress or completed game
-    const existing = loadGameState(dateString)
-    if (existing) {
-      setGameState(existing)
-      if (existing.completed) {
-        setAppPhase("results")
-      } else {
-        // Resume: if last phase was reveal, stay there; otherwise playing
-        setAppPhase(existing.phase === "reveal" ? "reveal" : "playing")
+    // In normal mode, check for in-progress or completed game
+    if (!isPractice) {
+      const existing = loadGameState(dateString)
+      if (existing) {
+        setGameState(existing)
+        if (existing.completed) {
+          setAppPhase("results")
+        } else {
+          setAppPhase(existing.phase === "reveal" ? "reveal" : "playing")
+        }
+        return
       }
-      return
     }
 
     // Fetch seed list
@@ -69,10 +81,10 @@ export function useGameState(): UseGameStateReturn {
       completed: false,
     }
 
-    saveGameState(newState)
+    persist(newState)
     setGameState(newState)
     setAppPhase("playing")
-  }, [])
+  }, [persist])
 
   const submitGuess = useCallback(
     (lat: number, lng: number) => {
@@ -83,7 +95,7 @@ export function useGameState(): UseGameStateReturn {
       const { lat: correctLat, lng: correctLng } = round.seed
       const distanceKm = calculateDistance(lat, lng, correctLat, correctLng)
       const score = calculateScore(distanceKm, round.hintsUsed)
-      const medal = getMedal(lat, lng, correctLat, correctLng, distanceKm, false)
+      const medal = getMedal(distanceKm, false)
 
       const updatedRound: GameRound = {
         ...round,
@@ -102,7 +114,7 @@ export function useGameState(): UseGameStateReturn {
         phase: "reveal",
       }
 
-      saveGameState(updatedState)
+      persist(updatedState)
       setGameState(updatedState)
       setAppPhase("reveal")
     },
@@ -152,7 +164,7 @@ export function useGameState(): UseGameStateReturn {
         const updatedRounds = [...gameState.rounds]
         updatedRounds[gameState.currentRound] = updatedRound
         const updatedState: GameState = { ...gameState, rounds: updatedRounds }
-        saveGameState(updatedState)
+        persist(updatedState)
         setGameState(updatedState)
       }
     },
@@ -170,7 +182,7 @@ export function useGameState(): UseGameStateReturn {
         phase: "results",
         completed: true,
       }
-      saveGameState(updatedState)
+      persist(updatedState)
       setGameState(updatedState)
       setAppPhase("results")
     } else {
@@ -179,15 +191,19 @@ export function useGameState(): UseGameStateReturn {
         currentRound: nextIndex,
         phase: "playing",
       }
-      saveGameState(updatedState)
+      persist(updatedState)
       setGameState(updatedState)
       setAppPhase("playing")
     }
   }, [gameState])
 
   const goToResults = useCallback(() => {
+    if (!gameState) {
+      const saved = loadGameState(getTodayDateString())
+      if (saved) setGameState(saved)
+    }
     setAppPhase("results")
-  }, [])
+  }, [gameState])
 
   const resetToSplash = useCallback(() => {
     setAppPhase("splash")
@@ -197,6 +213,7 @@ export function useGameState(): UseGameStateReturn {
   return {
     gameState,
     appPhase,
+    practiceMode,
     initGame,
     submitGuess,
     submitTimeout,

@@ -3,6 +3,7 @@ import { getTodayDateString, hasCompletedToday } from "../lib/storage"
 
 interface SplashScreenProps {
   onBegin: () => void
+  onPractice: () => void
   onViewResults: () => void
 }
 
@@ -28,7 +29,7 @@ function getCountdownToMidnightUTC(): string {
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
 }
 
-export function SplashScreen({ onBegin, onViewResults }: SplashScreenProps) {
+export function SplashScreen({ onBegin, onPractice, onViewResults }: SplashScreenProps) {
   const alreadyPlayed = hasCompletedToday()
   const todayString = getTodayDateString()
   const [countdown, setCountdown] = useState(getCountdownToMidnightUTC())
@@ -102,6 +103,19 @@ export function SplashScreen({ onBegin, onViewResults }: SplashScreenProps) {
             >
               View Results
             </button>
+            <button
+              onClick={onPractice}
+              className="px-8 py-3 bg-transparent border border-sepia text-ink-light rounded text-sm tracking-wide transition-colors hover:border-ink-light hover:text-ink"
+              style={{ fontFamily: "'Source Serif 4', serif" }}
+            >
+              Play again
+            </button>
+            <p
+              className="text-sepia-dark text-xs text-center max-w-xs"
+              style={{ fontFamily: "'Source Serif 4', serif" }}
+            >
+              Practice mode — results won't be saved
+            </p>
           </div>
         ) : (
           <button

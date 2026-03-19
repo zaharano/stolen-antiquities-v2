@@ -76,7 +76,7 @@ export function ObjectPanel({
   const totalRounds = 10
 
   const handleHintClick = (index: number) => {
-    if (index <= round.hintsUsed) return // already revealed
+    if (index < round.hintsUsed) return // already revealed
     onHintReveal(index)
   }
 

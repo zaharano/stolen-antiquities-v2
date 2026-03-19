@@ -1,0 +1,1983 @@
+[
+  {
+    "objectID": 200,
+    "lat": 42.3601,
+    "lng": -71.0589,
+    "difficulty": "medium",
+    "notes": "Boston|Charlestown, United States|United States — American (1640–80) [city-level coords]"
+  },
+  {
+    "objectID": 214,
+    "lat": 40.7128,
+    "lng": -74.006,
+    "difficulty": "medium",
+    "notes": "New York, United States — American (ca. 1855) [city-level coords]"
+  },
+  {
+    "objectID": 237,
+    "lat": 40.7128,
+    "lng": -74.006,
+    "difficulty": "medium",
+    "notes": "New York, United States — American (ca. 1870–75) [city-level coords]"
+  },
+  {
+    "objectID": 364,
+    "lat": 40.7128,
+    "lng": -74.006,
+    "difficulty": "medium",
+    "notes": "New York, United States — American (1770–76) [city-level coords]"
+  },
+  {
+    "objectID": 458,
+    "lat": 42.5126,
+    "lng": -73.3579,
+    "difficulty": "easy",
+    "notes": "Hancock, United States — American, Shaker (1825–50) [city-level coords]"
+  },
+  {
+    "objectID": 632,
+    "lat": 39.5637,
+    "lng": -75.3577,
+    "difficulty": "medium",
+    "notes": "Alloway, United States — American (1738–ca. 1777) [city-level coords]"
+  },
+  {
+    "objectID": 802,
+    "lat": 40.7128,
+    "lng": -74.006,
+    "difficulty": "medium",
+    "notes": "New York, United States — American (1700–1710) [city-level coords]"
+  },
+  {
+    "objectID": 1029,
+    "lat": 40.7128,
+    "lng": -74.006,
+    "difficulty": "medium",
+    "notes": "New York, United States — American (1876) [city-level coords]"
+  },
+  {
+    "objectID": 4470,
+    "lat": 19.0402,
+    "lng": -98.2063,
+    "difficulty": "easy",
+    "notes": "Puebla, Mexico — Mexican (ca. 1700) [city-level coords]"
+  },
+  {
+    "objectID": 13604,
+    "lat": 20.9674,
+    "lng": -89.5928,
+    "difficulty": "easy",
+    "notes": "Mérida, Mexico — Mexican (1786) [city-level coords]"
+  },
+  {
+    "objectID": 307630,
+    "lat": 20,
+    "lng": -90,
+    "difficulty": "medium",
+    "notes": "Mesoamerica, Mexico — Aztec (15th–early 16th century) [region-level coords]"
+  },
+  {
+    "objectID": 307651,
+    "lat": 20,
+    "lng": -90,
+    "difficulty": "medium",
+    "notes": "Mesoamerica, Mexico — Aztec (15th–early 16th century) [region-level coords]"
+  },
+  {
+    "objectID": 309427,
+    "lat": -7,
+    "lng": -79,
+    "difficulty": "medium",
+    "notes": "North Coast, Peru — Moche (400–700 CE) [region-level coords]"
+  },
+  {
+    "objectID": 309861,
+    "lat": 18.4613,
+    "lng": -97.3942,
+    "difficulty": "medium",
+    "notes": "Tehuacan Valley, Mexico — Eastern Nahua (1200–1521) [region-level coords]"
+  },
+  {
+    "objectID": 309959,
+    "lat": -7,
+    "lng": -79,
+    "difficulty": "medium",
+    "notes": "North Coast, Peru — Lambayeque (Sicán) (10th–12th century) [region-level coords]"
+  },
+  {
+    "objectID": 310073,
+    "lat": -9,
+    "lng": 158,
+    "difficulty": "medium",
+    "notes": "Possibly New Georgia or Guadalcanal Island, Solomon Islands — Solomon Islands people (Early to mid-19th century) [region-level coords]"
+  },
+  {
+    "objectID": 310279,
+    "lat": 20,
+    "lng": -90,
+    "difficulty": "medium",
+    "notes": "Mesoamerica, Mexico — Olmec (900–400 BCE) [region-level coords]"
+  },
+  {
+    "objectID": 310364,
+    "lat": 20,
+    "lng": -90,
+    "difficulty": "medium",
+    "notes": "Mesoamerica, Guatemala or Mexico — Maya (7th–8th century) [region-level coords]"
+  },
+  {
+    "objectID": 310542,
+    "lat": 20,
+    "lng": -90,
+    "difficulty": "medium",
+    "notes": "Mesoamerica, Guatemala or Mexico — Maya (400–500 CE) [region-level coords]"
+  },
+  {
+    "objectID": 310563,
+    "lat": -14,
+    "lng": -75.5,
+    "difficulty": "medium",
+    "notes": "South Coast, Peru — Nasca (100–400 CE) [region-level coords]"
+  },
+  {
+    "objectID": 310604,
+    "lat": 21.0406,
+    "lng": -104.3614,
+    "difficulty": "easy",
+    "notes": "Iztlan del Río, Mesoamerica, Mexico — Ixtlán del Río (1st century BCE–2nd century CE) [city-level coords]"
+  },
+  {
+    "objectID": 310652,
+    "lat": -7.42,
+    "lng": -79.15,
+    "difficulty": "medium",
+    "notes": "Tembladera, Peru — Cupisnique (1000–800 BCE) [region-level coords]"
+  },
+  {
+    "objectID": 310765,
+    "lat": 13,
+    "lng": -8,
+    "difficulty": "easy",
+    "notes": "Tintam village, Mali — Dogon peoples (14th–17th century) [city-level coords]"
+  },
+  {
+    "objectID": 311021,
+    "lat": 5.7,
+    "lng": 10.5,
+    "difficulty": "medium",
+    "notes": "Grassfields region, Cameroon — Bamum kingdom (before 1880) [region-level coords]"
+  },
+  {
+    "objectID": 311024,
+    "lat": 5.5,
+    "lng": -1.5,
+    "difficulty": "medium",
+    "notes": "Twifo-Heman traditional area, Ghana — Akan peoples (17th–mid-18th century) [region-level coords]"
+  },
+  {
+    "objectID": 311336,
+    "lat": -17.65,
+    "lng": -149.45,
+    "difficulty": "medium",
+    "notes": "Society Islands, Tahiti — Maohi (Tahitian) (18th century) [region-level coords]"
+  },
+  {
+    "objectID": 311950,
+    "lat": -9.95,
+    "lng": 142.18,
+    "difficulty": "medium",
+    "notes": "Mabuiag Island, Australia — Torres Strait Islander (mid to late 19th century) [region-level coords]"
+  },
+  {
+    "objectID": 312290,
+    "lat": 6.3369,
+    "lng": 5.6289,
+    "difficulty": "medium",
+    "notes": "Igun-Eronmwen guild, Court of Benin, Nigeria — Edo artist (16th century) [region-level coords]"
+  },
+  {
+    "objectID": 312602,
+    "lat": 18.74,
+    "lng": -70.17,
+    "difficulty": "medium",
+    "notes": "Caribbean, Dominican Republic (?) — Taíno (974–1020 CE) [region-level coords]"
+  },
+  {
+    "objectID": 312677,
+    "lat": -14,
+    "lng": -75.5,
+    "difficulty": "medium",
+    "notes": "South Coast, Peru — Wari (600–900 CE) [region-level coords]"
+  },
+  {
+    "objectID": 312781,
+    "lat": 20,
+    "lng": -90,
+    "difficulty": "medium",
+    "notes": "Mesoamerica, Mexico — Teotihuacan (3rd–7th century) [region-level coords]"
+  },
+  {
+    "objectID": 313327,
+    "lat": 20,
+    "lng": -90,
+    "difficulty": "medium",
+    "notes": "Mesoamerica, Mexico — Olmec (12th–9th century BCE) [region-level coords]"
+  },
+  {
+    "objectID": 313330,
+    "lat": 9.93,
+    "lng": -84.09,
+    "difficulty": "medium",
+    "notes": "Central Region, Costa Rica — Central Region (4th–7th century) [region-level coords]"
+  },
+  {
+    "objectID": 313386,
+    "lat": 20,
+    "lng": -90,
+    "difficulty": "medium",
+    "notes": "Mesoamerica, Mexico — Remojadas (7th–8th century) [region-level coords]"
+  },
+  {
+    "objectID": 313629,
+    "lat": -4,
+    "lng": 136.5,
+    "difficulty": "easy",
+    "notes": "Kabiterau village, Indonesia — Sentani people (19th century) [city-level coords]"
+  },
+  {
+    "objectID": 313654,
+    "lat": -23.13,
+    "lng": -134.97,
+    "difficulty": "medium",
+    "notes": "Gambier Islands, Mangareva — Mangarevan people (Early 19th century) [region-level coords]"
+  },
+  {
+    "objectID": 313658,
+    "lat": -19.75,
+    "lng": -174.37,
+    "difficulty": "medium",
+    "notes": "Ha'apai Islands, Tonga — Ha'apai Islands (Early 19th century) [region-level coords]"
+  },
+  {
+    "objectID": 313780,
+    "lat": -4.2,
+    "lng": 143.2,
+    "difficulty": "easy",
+    "notes": "Yamok village, Papua New Guinea — Sawos people (19th century or earlier) [city-level coords]"
+  },
+  {
+    "objectID": 314034,
+    "lat": -5,
+    "lng": 27.5,
+    "difficulty": "easy",
+    "notes": "Buli village, Democratic Republic of the Congo — Luba or Hemba peoples (19th century) [city-level coords]"
+  },
+  {
+    "objectID": 314704,
+    "lat": 11.4186,
+    "lng": -7.4845,
+    "difficulty": "easy",
+    "notes": "Bougouni or Dioila region, Mali — Bamana peoples (16th–19th century) [city-level coords]"
+  },
+  {
+    "objectID": 314826,
+    "lat": -27.11,
+    "lng": -109.35,
+    "difficulty": "medium",
+    "notes": "Rapa Nui (Easter Island), Chile — Rapa Nui people (early 19th century) [region-level coords]"
+  },
+  {
+    "objectID": 316393,
+    "lat": 6.3369,
+    "lng": 5.6289,
+    "difficulty": "medium",
+    "notes": "Igun-Eronmwen guild, Court of Benin, Nigeria — Edo (16th–17th century) [region-level coords]"
+  },
+  {
+    "objectID": 316457,
+    "lat": 0.589,
+    "lng": 101.3431,
+    "difficulty": "medium",
+    "notes": "Sumatra, Indonesia — Lampung (probably 18th century) [region-level coords]"
+  },
+  {
+    "objectID": 316503,
+    "lat": 6.3369,
+    "lng": 5.6289,
+    "difficulty": "easy",
+    "notes": "Court of Benin, Nigeria — Edo peoples (16th–17th century) [city-level coords]"
+  },
+  {
+    "objectID": 317196,
+    "lat": 11.8,
+    "lng": 39,
+    "difficulty": "medium",
+    "notes": "Highlands region, Ethiopia (ca. 1500) [region-level coords]"
+  },
+  {
+    "objectID": 317618,
+    "lat": 11.5,
+    "lng": 38,
+    "difficulty": "medium",
+    "notes": "Amhara region, Ethiopia — Amhara peoples (late 14th–early 15th century) [region-level coords]"
+  },
+  {
+    "objectID": 317736,
+    "lat": -15.8403,
+    "lng": -72.6567,
+    "difficulty": "easy",
+    "notes": "Chuquibamba, Peru — Chuquibamba (14th–early 16th century) [city-level coords]"
+  },
+  {
+    "objectID": 318622,
+    "lat": 6.3369,
+    "lng": 5.6289,
+    "difficulty": "medium",
+    "notes": "Igun-Eronmwen guild, Court of Benin, Nigeria — Edo (16th century) [region-level coords]"
+  },
+  {
+    "objectID": 318764,
+    "lat": -20,
+    "lng": 44.5,
+    "difficulty": "medium",
+    "notes": "Menabe region, Madagascar — Sakalava peoples (17th–late 18th century) [region-level coords]"
+  },
+  {
+    "objectID": 320053,
+    "lat": -4.5,
+    "lng": 12,
+    "difficulty": "medium",
+    "notes": "Chiloango River, Republic of the Congo or Cabinda, Angola — Kongo (Second half of the 19th century) [region-level coords]"
+  },
+  {
+    "objectID": 444607,
+    "lat": 34.3482,
+    "lng": 62.2,
+    "difficulty": "medium",
+    "notes": "probably Herat, present-day Afghanistan (early 16th century) [city-level coords]"
+  },
+  {
+    "objectID": 444812,
+    "lat": 30.0444,
+    "lng": 31.2357,
+    "difficulty": "medium",
+    "notes": "Cairo, Egypt (ca. 1325–30) [city-level coords]"
+  },
+  {
+    "objectID": 444897,
+    "lat": 40.4295,
+    "lng": 29.7233,
+    "difficulty": "medium",
+    "notes": "Iznik, Turkey (ca. 1578) [city-level coords]"
+  },
+  {
+    "objectID": 446285,
+    "lat": 37.8882,
+    "lng": -4.7794,
+    "difficulty": "medium",
+    "notes": "probably Cordoba, Spain (10th–early 11th century) [city-level coords]"
+  },
+  {
+    "objectID": 446595,
+    "lat": 34.3482,
+    "lng": 62.2,
+    "difficulty": "medium",
+    "notes": "Herat, present-day Afghanistan (A.H. 931/1524–25 CE) [city-level coords]"
+  },
+  {
+    "objectID": 446642,
+    "lat": 33.9851,
+    "lng": 51.4347,
+    "difficulty": "medium",
+    "notes": "probably Kashan, Iran (second half 16th century) [city-level coords]"
+  },
+  {
+    "objectID": 446646,
+    "lat": 34.0837,
+    "lng": 74.7973,
+    "difficulty": "medium",
+    "notes": "Kashmir or Lahore, Northern India or Pakistan (ca. 1650) [city-level coords]"
+  },
+  {
+    "objectID": 446892,
+    "lat": 34.3482,
+    "lng": 62.2,
+    "difficulty": "medium",
+    "notes": "Herat, present-day Afghanistan (ca. 1480) [city-level coords]"
+  },
+  {
+    "objectID": 446999,
+    "lat": 31.5497,
+    "lng": 74.3436,
+    "difficulty": "medium",
+    "notes": "Lahore, present-day Pakistan (late 16th–early 17th century) [city-level coords]"
+  },
+  {
+    "objectID": 447000,
+    "lat": 30.0444,
+    "lng": 31.2357,
+    "difficulty": "medium",
+    "notes": "probably Cairo, Egypt (shortly after 1285) [city-level coords]"
+  },
+  {
+    "objectID": 447071,
+    "lat": 32.6546,
+    "lng": 51.668,
+    "difficulty": "medium",
+    "notes": "Isfahan, Iran (dated A.H. 741 / 1340–41 CE) [city-level coords]"
+  },
+  {
+    "objectID": 447509,
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "difficulty": "medium",
+    "notes": "probably Istanbul, Turkey (ca. 1575–90) [city-level coords]"
+  },
+  {
+    "objectID": 447510,
+    "lat": 30.0444,
+    "lng": 31.2357,
+    "difficulty": "medium",
+    "notes": "probably Cairo, probably Egypt (early 16th century) [city-level coords]"
+  },
+  {
+    "objectID": 448183,
+    "lat": 31.5497,
+    "lng": 74.3436,
+    "difficulty": "medium",
+    "notes": "probably Lahore, present-day Pakistan (ca. 1590–95) [city-level coords]"
+  },
+  {
+    "objectID": 448671,
+    "lat": 33.9851,
+    "lng": 51.4347,
+    "difficulty": "medium",
+    "notes": "Kashan, Iran (dated A.H. 612/1215–16 CE) [city-level coords]"
+  },
+  {
+    "objectID": 448938,
+    "lat": 38.08,
+    "lng": 46.2919,
+    "difficulty": "medium",
+    "notes": "Tabriz, Iran (1330s) [city-level coords]"
+  },
+  {
+    "objectID": 449330,
+    "lat": 36.2107,
+    "lng": 58.7956,
+    "difficulty": "medium",
+    "notes": "Nishapur, Iran (late 9th–early 10th century) [city-level coords]"
+  },
+  {
+    "objectID": 449348,
+    "lat": 36.2107,
+    "lng": 58.7956,
+    "difficulty": "medium",
+    "notes": "Nishapur, Iran (10th century) [city-level coords]"
+  },
+  {
+    "objectID": 449457,
+    "lat": 36.2107,
+    "lng": 58.7956,
+    "difficulty": "medium",
+    "notes": "Nishapur|Nishapur, Iran|Iran (9th–10th century) [city-level coords]"
+  },
+  {
+    "objectID": 449533,
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "difficulty": "medium",
+    "notes": "Istanbul, Turkey (ca. 1555–60) [city-level coords]"
+  },
+  {
+    "objectID": 449534,
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "difficulty": "medium",
+    "notes": "Istanbul, Turkey (ca. 1555–60) [city-level coords]"
+  },
+  {
+    "objectID": 449537,
+    "lat": 32.6546,
+    "lng": 51.668,
+    "difficulty": "medium",
+    "notes": "Isfahan, Iran (dated A.H. 755/1354–55 CE) [city-level coords]"
+  },
+  {
+    "objectID": 449619,
+    "lat": 36.2107,
+    "lng": 58.7956,
+    "difficulty": "medium",
+    "notes": "Nishapur, Iran (9th–10th century) [city-level coords]"
+  },
+  {
+    "objectID": 450409,
+    "lat": 30.0444,
+    "lng": 31.2357,
+    "difficulty": "medium",
+    "notes": "possibly Cairo, Egypt (late 13th century) [city-level coords]"
+  },
+  {
+    "objectID": 450513,
+    "lat": 35.5,
+    "lng": 61.5,
+    "difficulty": "medium",
+    "notes": "Khurasan or Herat, Iran or Afghanistan (ca. 1180–1210) [region-level coords]"
+  },
+  {
+    "objectID": 450818,
+    "lat": 36.2107,
+    "lng": 58.7956,
+    "difficulty": "medium",
+    "notes": "Nishapur, Iran (9th–12th century) [city-level coords]"
+  },
+  {
+    "objectID": 451023,
+    "lat": 32.6546,
+    "lng": 51.668,
+    "difficulty": "medium",
+    "notes": "Isfahan, Iran (dated A.H. 1039/ 1630 CE) [city-level coords]"
+  },
+  {
+    "objectID": 451042,
+    "lat": 34.7399,
+    "lng": 60.7744,
+    "difficulty": "medium",
+    "notes": "Taybad, Iran (dated A.H. 577/ 1181–82 CE) [city-level coords]"
+  },
+  {
+    "objectID": 451095,
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "difficulty": "medium",
+    "notes": "probably Istanbul, Turkey (mid-16th century) [city-level coords]"
+  },
+  {
+    "objectID": 451101,
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "difficulty": "medium",
+    "notes": "probably Istanbul, Turkey (ca. 1565–80) [city-level coords]"
+  },
+  {
+    "objectID": 451102,
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "difficulty": "medium",
+    "notes": "probably Istanbul, Turkey (mid-16th century) [city-level coords]"
+  },
+  {
+    "objectID": 451203,
+    "lat": 33.3152,
+    "lng": 44.3661,
+    "difficulty": "medium",
+    "notes": "Baghdad, Iraq (dated A.H. 707/ 1307–8 CE) [city-level coords]"
+  },
+  {
+    "objectID": 451332,
+    "lat": 33.3152,
+    "lng": 44.3661,
+    "difficulty": "medium",
+    "notes": "possibly Baghdad, Iraq or Northern Jazira (dated A.H. 621 / 1224 CE) [city-level coords]"
+  },
+  {
+    "objectID": 451400,
+    "lat": 33.3152,
+    "lng": 44.3661,
+    "difficulty": "medium",
+    "notes": "Baghdad, Iraq (dated A.H. 621 / 1224 CE) [city-level coords]"
+  },
+  {
+    "objectID": 451405,
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "difficulty": "medium",
+    "notes": "Istanbul, Turkey (ca. 1540–50) [city-level coords]"
+  },
+  {
+    "objectID": 451447,
+    "lat": 36.8368,
+    "lng": 54.4395,
+    "difficulty": "medium",
+    "notes": "Gurgan, Iran (first half 11th century) [city-level coords]"
+  },
+  {
+    "objectID": 451470,
+    "lat": 33.9851,
+    "lng": 51.4347,
+    "difficulty": "medium",
+    "notes": "probably Kashan, Iran (16th century) [city-level coords]"
+  },
+  {
+    "objectID": 451490,
+    "lat": 40.4295,
+    "lng": 29.7233,
+    "difficulty": "medium",
+    "notes": "Iznik, Turkey (ca. 1575–90) [city-level coords]"
+  },
+  {
+    "objectID": 451715,
+    "lat": 30.5085,
+    "lng": 47.7804,
+    "difficulty": "medium",
+    "notes": "probably Basra, Iraq (9th century) [city-level coords]"
+  },
+  {
+    "objectID": 451725,
+    "lat": 32.6546,
+    "lng": 51.668,
+    "difficulty": "medium",
+    "notes": "Isfahan, Iran (ca. 1600) [city-level coords]"
+  },
+  {
+    "objectID": 451802,
+    "lat": 36.2107,
+    "lng": 58.7956,
+    "difficulty": "medium",
+    "notes": "Nishapur, Iran (10th century) [city-level coords]"
+  },
+  {
+    "objectID": 451804,
+    "lat": 30.2839,
+    "lng": 57.0834,
+    "difficulty": "medium",
+    "notes": "Kirman, Iran (ca. 1640) [city-level coords]"
+  },
+  {
+    "objectID": 451995,
+    "lat": 39.488,
+    "lng": -0.4557,
+    "difficulty": "medium",
+    "notes": "Manises (Valencia), Spain (late 15th–early 16th century) [city-level coords]"
+  },
+  {
+    "objectID": 452037,
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "difficulty": "medium",
+    "notes": "probably Istanbul or Amasya, Turkey (dated A.H. 904/1498–99 CE) [city-level coords]"
+  },
+  {
+    "objectID": 452100,
+    "lat": 30.0444,
+    "lng": 31.2357,
+    "difficulty": "medium",
+    "notes": "probably Cairo, Egypt (ca. 1500) [city-level coords]"
+  },
+  {
+    "objectID": 452102,
+    "lat": 33.5138,
+    "lng": 36.2765,
+    "difficulty": "medium",
+    "notes": "Damascus, Syria (dated A.H. 1119/ 1707 CE) [city-level coords]"
+  },
+  {
+    "objectID": 452111,
+    "lat": 38.08,
+    "lng": 46.2919,
+    "difficulty": "medium",
+    "notes": "Tabriz, Iran (ca. 1525) [city-level coords]"
+  },
+  {
+    "objectID": 452112,
+    "lat": 38.08,
+    "lng": 46.2919,
+    "difficulty": "medium",
+    "notes": "Tabriz, Iran (ca. 1525) [city-level coords]"
+  },
+  {
+    "objectID": 452160,
+    "lat": 38.08,
+    "lng": 46.2919,
+    "difficulty": "medium",
+    "notes": "Tabriz, Iran (ca. 1530) [city-level coords]"
+  },
+  {
+    "objectID": 452598,
+    "lat": 42,
+    "lng": 63,
+    "difficulty": "medium",
+    "notes": "Central Asia, Sothern Turkmenistan (late 18th–early 19th century) [region-level coords]"
+  },
+  {
+    "objectID": 453053,
+    "lat": 23.6852,
+    "lng": 90.3563,
+    "difficulty": "medium",
+    "notes": "Bengal, India (dated A.H. 905/1500 CE) [region-level coords]"
+  },
+  {
+    "objectID": 453183,
+    "lat": 16.8302,
+    "lng": 75.71,
+    "difficulty": "medium",
+    "notes": "Bijapur, Deccan, India (ca. 1680) [city-level coords]"
+  },
+  {
+    "objectID": 453243,
+    "lat": 17.9104,
+    "lng": 77.5199,
+    "difficulty": "medium",
+    "notes": "Bidar, Deccan, India (late 17th century) [city-level coords]"
+  },
+  {
+    "objectID": 453336,
+    "lat": 34.3482,
+    "lng": 62.2,
+    "difficulty": "medium",
+    "notes": "Herat, present-day Afghanistan (ca. 1601–6) [city-level coords]"
+  },
+  {
+    "objectID": 453351,
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "difficulty": "medium",
+    "notes": "Istanbul, Turkey (ca. 1595) [city-level coords]"
+  },
+  {
+    "objectID": 454011,
+    "lat": 26.8467,
+    "lng": 80.9462,
+    "difficulty": "medium",
+    "notes": "probably Lucknow, India (ca. 1780) [city-level coords]"
+  },
+  {
+    "objectID": 454015,
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "difficulty": "medium",
+    "notes": "Istanbul, Turkey (ca. 1550–70) [city-level coords]"
+  },
+  {
+    "objectID": 454662,
+    "lat": 35.6781,
+    "lng": 10.0963,
+    "difficulty": "medium",
+    "notes": "possibly Qairawan, Tunisia (second half 9th–mid-10th century) [city-level coords]"
+  },
+  {
+    "objectID": 454738,
+    "lat": 15.2993,
+    "lng": 74.124,
+    "difficulty": "medium",
+    "notes": "Goa, India (late 17th–early 18th century) [region-level coords]"
+  },
+  {
+    "objectID": 455059,
+    "lat": 34.3482,
+    "lng": 62.2,
+    "difficulty": "medium",
+    "notes": "Herat, present-day Afghanistan (ca. 1430) [city-level coords]"
+  },
+  {
+    "objectID": 455082,
+    "lat": 32.6546,
+    "lng": 51.668,
+    "difficulty": "medium",
+    "notes": "probably Isfahan, Iran (1640–50) [city-level coords]"
+  },
+  {
+    "objectID": 456074,
+    "lat": 35.6781,
+    "lng": 10.0963,
+    "difficulty": "medium",
+    "notes": "probably Qairawan, Tunisia (ca. A.H. 410/ 1019–20 CE) [city-level coords]"
+  },
+  {
+    "objectID": 456949,
+    "lat": 22.5726,
+    "lng": 88.3639,
+    "difficulty": "medium",
+    "notes": "Calcutta, India (ca. 1777–82) [city-level coords]"
+  },
+  {
+    "objectID": 457730,
+    "lat": 16.8302,
+    "lng": 75.71,
+    "difficulty": "medium",
+    "notes": "Bijapur or Golconda, Deccan, India (second half 16th century) [city-level coords]"
+  },
+  {
+    "objectID": 463973,
+    "lat": 49.894,
+    "lng": 2.2957,
+    "difficulty": "easy",
+    "notes": "Amiens, France — French (1264–88) [city-level coords]"
+  },
+  {
+    "objectID": 464125,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France — French (ca. 1310–30) [city-level coords]"
+  },
+  {
+    "objectID": 464156,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "probably Paris, France — French (ca. 1320–40) [city-level coords]"
+  },
+  {
+    "objectID": 464443,
+    "lat": 42.5987,
+    "lng": -5.5671,
+    "difficulty": "easy",
+    "notes": "León, Spain — Spanish (ca. 1115–20) [city-level coords]"
+  },
+  {
+    "objectID": 464483,
+    "lat": 45.8336,
+    "lng": 1.2611,
+    "difficulty": "easy",
+    "notes": "Limoges, France — French (ca. 1180–90) [city-level coords]"
+  },
+  {
+    "objectID": 464559,
+    "lat": 45.8336,
+    "lng": 1.2611,
+    "difficulty": "easy",
+    "notes": "Limoges, France — French (ca. 1150) [city-level coords]"
+  },
+  {
+    "objectID": 464604,
+    "lat": 45.8336,
+    "lng": 1.2611,
+    "difficulty": "easy",
+    "notes": "Limoges, France — French (ca. 1220–1230) [city-level coords]"
+  },
+  {
+    "objectID": 464607,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France — French (ca. 1300–1310) [city-level coords]"
+  },
+  {
+    "objectID": 465937,
+    "lat": 43.933,
+    "lng": 10.9172,
+    "difficulty": "easy",
+    "notes": "Pistoia, Italy — Italian (ca. 1301, with later additions) [city-level coords]"
+  },
+  {
+    "objectID": 466045,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France — French (ca. 1260–80) [city-level coords]"
+  },
+  {
+    "objectID": 466178,
+    "lat": 47.5596,
+    "lng": 7.5886,
+    "difficulty": "easy",
+    "notes": "Basel, Switzerland — Upper Rhenish (ca. 1420–30) [city-level coords]"
+  },
+  {
+    "objectID": 466187,
+    "lat": 49.4521,
+    "lng": 11.0767,
+    "difficulty": "easy",
+    "notes": "Nuremberg, Germany (?) — German (ca. 1465) [city-level coords]"
+  },
+  {
+    "objectID": 466254,
+    "lat": 45.4654,
+    "lng": 9.1866,
+    "difficulty": "easy",
+    "notes": "Milan (?), Italy — North Italian (early 10th century) [city-level coords]"
+  },
+  {
+    "objectID": 466287,
+    "lat": 48.2082,
+    "lng": 16.3738,
+    "difficulty": "easy",
+    "notes": "probably Vienna, Austria — Austrian (ca. 1470) [city-level coords]"
+  },
+  {
+    "objectID": 466289,
+    "lat": 50.938,
+    "lng": 6.9603,
+    "difficulty": "easy",
+    "notes": "Cologne, Germany — German (ca. 1170) [city-level coords]"
+  },
+  {
+    "objectID": 466580,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France — French (ca. 1245–47) [city-level coords]"
+  },
+  {
+    "objectID": 466645,
+    "lat": 31.2001,
+    "lng": 29.9187,
+    "difficulty": "easy",
+    "notes": "Alexandria, Egypt — Roman (250–300) [city-level coords]"
+  },
+  {
+    "objectID": 467638,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France (cartoon)|Southern Netherlands (woven) — French (cartoon)/South Netherlandish (woven) (1495–1505) [city-level coords]"
+  },
+  {
+    "objectID": 467642,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France (cartoon)|Southern Netherlands (woven) — French (cartoon)/South Netherlandish (woven) (1495–1505) [city-level coords]"
+  },
+  {
+    "objectID": 467733,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "possibly Paris, France — French (1350–75) [city-level coords]"
+  },
+  {
+    "objectID": 467746,
+    "lat": 36.7213,
+    "lng": -4.4214,
+    "difficulty": "easy",
+    "notes": "probably Málaga, Spain — Spanish (late 1300s or early 1400s) [city-level coords]"
+  },
+  {
+    "objectID": 468207,
+    "lat": 42.6167,
+    "lng": 12.55,
+    "difficulty": "easy",
+    "notes": "San Gemini, Central Italy — Central Italian (carved 1000s, assembled 1100s or 1200s) [city-level coords]"
+  },
+  {
+    "objectID": 468633,
+    "lat": 52.1508,
+    "lng": 9.9511,
+    "difficulty": "easy",
+    "notes": "probably Hildesheim, Germany — German (ca. 1250) [city-level coords]"
+  },
+  {
+    "objectID": 469837,
+    "lat": 50.776,
+    "lng": 6.0838,
+    "difficulty": "easy",
+    "notes": "Aachen, Germany — Carolingian (early 9th century) [city-level coords]"
+  },
+  {
+    "objectID": 469844,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "easy",
+    "notes": "probably London, England — British (ca. 1300) [city-level coords]"
+  },
+  {
+    "objectID": 469858,
+    "lat": 50.938,
+    "lng": 6.9603,
+    "difficulty": "easy",
+    "notes": "probably Cologne, Germany — German (1300–1325) [city-level coords]"
+  },
+  {
+    "objectID": 469879,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France — French (mid-13th century) [city-level coords]"
+  },
+  {
+    "objectID": 469913,
+    "lat": 48.5734,
+    "lng": 7.7521,
+    "difficulty": "easy",
+    "notes": "Strasbourg, present-day France — German (ca. 1500) [city-level coords]"
+  },
+  {
+    "objectID": 469959,
+    "lat": 47.9667,
+    "lng": 16.4,
+    "difficulty": "easy",
+    "notes": "Ebreichsdorf, Lower Austria — Austrian (ca. 1390) [city-level coords]"
+  },
+  {
+    "objectID": 470304,
+    "lat": 50.6063,
+    "lng": 3.3886,
+    "difficulty": "easy",
+    "notes": "Tournai, South Netherlands — South Netherlandish (ca. 1427–32) [city-level coords]"
+  },
+  {
+    "objectID": 470306,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France — French (1405–1408/1409) [city-level coords]"
+  },
+  {
+    "objectID": 470309,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France — French (ca. 1324–28) [city-level coords]"
+  },
+  {
+    "objectID": 470310,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France — French (ca. 1325–50) [city-level coords]"
+  },
+  {
+    "objectID": 470311,
+    "lat": 46.9475,
+    "lng": 4.2988,
+    "difficulty": "easy",
+    "notes": "vicinity of Autun, France — French (ca. 1130–1140) [city-level coords]"
+  },
+  {
+    "objectID": 470312,
+    "lat": 49.4521,
+    "lng": 11.0767,
+    "difficulty": "easy",
+    "notes": "probably Nuremberg, Germany — German (ca. 1500) [city-level coords]"
+  },
+  {
+    "objectID": 470600,
+    "lat": 43.3186,
+    "lng": 11.3307,
+    "difficulty": "easy",
+    "notes": "Siena, Italy — Italian (1374) [city-level coords]"
+  },
+  {
+    "objectID": 471904,
+    "lat": 43.9493,
+    "lng": 4.8055,
+    "difficulty": "easy",
+    "notes": "Avignon, France — Italian (ca. 1330–35) [city-level coords]"
+  },
+  {
+    "objectID": 471975,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "probably Paris, France — French (ca. 1260–70) [city-level coords]"
+  },
+  {
+    "objectID": 472387,
+    "lat": 41.614,
+    "lng": 0.6224,
+    "difficulty": "easy",
+    "notes": "Lerida, Spain — Catalan (ca. 1300–1350) [city-level coords]"
+  },
+  {
+    "objectID": 473047,
+    "lat": 48.5734,
+    "lng": 7.7521,
+    "difficulty": "easy",
+    "notes": "Strasbourg, present-day France — German (ca. 1250) [city-level coords]"
+  },
+  {
+    "objectID": 474263,
+    "lat": 45.8336,
+    "lng": 1.2611,
+    "difficulty": "easy",
+    "notes": "Limoges, France — French (ca. 1170–80) [city-level coords]"
+  },
+  {
+    "objectID": 474435,
+    "lat": 47.999,
+    "lng": 7.8421,
+    "difficulty": "easy",
+    "notes": "probably Freiburg im Breisgau, Germany — German (ca. 1230–50) [city-level coords]"
+  },
+  {
+    "objectID": 500605,
+    "lat": 31.2304,
+    "lng": 121.4737,
+    "difficulty": "easy",
+    "notes": "Shanghai, China — Chinese (19th century) [city-level coords]"
+  },
+  {
+    "objectID": 500637,
+    "lat": 24.4798,
+    "lng": 118.0894,
+    "difficulty": "easy",
+    "notes": "Xianmen (formerly Amoy), China — Chinese (19th century) [city-level coords]"
+  },
+  {
+    "objectID": 500655,
+    "lat": 34.5306,
+    "lng": 135.859,
+    "difficulty": "easy",
+    "notes": "Miwa, Nara Prefecture, Japan — Japanese (17th century) [city-level coords]"
+  },
+  {
+    "objectID": 501227,
+    "lat": 53.2555,
+    "lng": -132.0747,
+    "difficulty": "easy",
+    "notes": "Skidegate, Canada — Native American (Tsimshian) (19th century) [city-level coords]"
+  },
+  {
+    "objectID": 501520,
+    "lat": 49.4521,
+    "lng": 11.0767,
+    "difficulty": "easy",
+    "notes": "Nürnberg, Germany — German (ca. 1700) [city-level coords]"
+  },
+  {
+    "objectID": 501534,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France — French (1813) [city-level coords]"
+  },
+  {
+    "objectID": 501675,
+    "lat": 48.3833,
+    "lng": 10.45,
+    "difficulty": "easy",
+    "notes": "Jettingen, Germany — German (1790) [city-level coords]"
+  },
+  {
+    "objectID": 501762,
+    "lat": 49.4521,
+    "lng": 11.0767,
+    "difficulty": "easy",
+    "notes": "Nürnberg, Germany — German (1598) [city-level coords]"
+  },
+  {
+    "objectID": 501767,
+    "lat": 51.4988,
+    "lng": 3.6136,
+    "difficulty": "easy",
+    "notes": "Middelburg, The Netherlands — Flemish (1600) [city-level coords]"
+  },
+  {
+    "objectID": 501788,
+    "lat": 43.7696,
+    "lng": 11.2558,
+    "difficulty": "easy",
+    "notes": "Florence, Italy — Italian (Florence) (1720) [city-level coords]"
+  },
+  {
+    "objectID": 501802,
+    "lat": 34.7,
+    "lng": 136.5,
+    "difficulty": "easy",
+    "notes": "Tohshima, Japan — Japanese (ca. 1873) [city-level coords]"
+  },
+  {
+    "objectID": 502040,
+    "lat": 21.9745,
+    "lng": 96.0836,
+    "difficulty": "easy",
+    "notes": "Mandalay?, Myanmar (formerly Burma) — Burmese (19th century) [city-level coords]"
+  },
+  {
+    "objectID": 502064,
+    "lat": -8.6574,
+    "lng": 122.236,
+    "difficulty": "easy",
+    "notes": "Nusa Tenggara, Indonesia — Javanese (Timorese) (late 19th century) [city-level coords]"
+  },
+  {
+    "objectID": 502325,
+    "lat": 48.3705,
+    "lng": 10.8978,
+    "difficulty": "easy",
+    "notes": "Possibly Augsburg, Germany — German (ca. 1600) [city-level coords]"
+  },
+  {
+    "objectID": 502377,
+    "lat": 41.9028,
+    "lng": 12.4964,
+    "difficulty": "easy",
+    "notes": "Rome, Italy — Italian (Roman) (ca. 1670) [city-level coords]"
+  },
+  {
+    "objectID": 503008,
+    "lat": 45.1327,
+    "lng": 10.0227,
+    "difficulty": "easy",
+    "notes": "Cremona, Italy — Italian (Cremona) (1711) [city-level coords]"
+  },
+  {
+    "objectID": 503010,
+    "lat": 45.1327,
+    "lng": 10.0227,
+    "difficulty": "easy",
+    "notes": "Cremona, Italy — Italian (Cremona) (1694) [city-level coords]"
+  },
+  {
+    "objectID": 503043,
+    "lat": 45.4408,
+    "lng": 12.3155,
+    "difficulty": "easy",
+    "notes": "Venice, Italy — Italian (1540) [city-level coords]"
+  },
+  {
+    "objectID": 503045,
+    "lat": 45.1327,
+    "lng": 10.0227,
+    "difficulty": "easy",
+    "notes": "Cremona, Italy — Italian (Cremona) (1693) [city-level coords]"
+  },
+  {
+    "objectID": 503046,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "easy",
+    "notes": "London, United Kingdom — British (ca. 1840) [city-level coords]"
+  },
+  {
+    "objectID": 503048,
+    "lat": 45.4654,
+    "lng": 9.1866,
+    "difficulty": "easy",
+    "notes": "Milan?, Italy — Italian (ca. 1420) [city-level coords]"
+  },
+  {
+    "objectID": 503155,
+    "lat": 41.9028,
+    "lng": 12.4964,
+    "difficulty": "easy",
+    "notes": "Rome, Italy — Italian (late 17th century) [city-level coords]"
+  },
+  {
+    "objectID": 503200,
+    "lat": 8,
+    "lng": 125,
+    "difficulty": "easy",
+    "notes": "Mindanao, Philippines — Philippine (Mindanao) (19th century) [city-level coords]"
+  },
+  {
+    "objectID": 503219,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "easy",
+    "notes": "London, United Kingdom — British (ca. 1680) [city-level coords]"
+  },
+  {
+    "objectID": 503271,
+    "lat": 50.4289,
+    "lng": 7.4641,
+    "difficulty": "easy",
+    "notes": "Neuwied, Germany — German (1763) [city-level coords]"
+  },
+  {
+    "objectID": 503283,
+    "lat": 40.4168,
+    "lng": -3.7038,
+    "difficulty": "easy",
+    "notes": "Madrid, Spain — Spanish (1912) [city-level coords]"
+  },
+  {
+    "objectID": 503385,
+    "lat": 45.4408,
+    "lng": 12.3155,
+    "difficulty": "easy",
+    "notes": "Venice, Italy — Italian (ca. 1630–50) [city-level coords]"
+  },
+  {
+    "objectID": 503396,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "easy",
+    "notes": "London, United Kingdom — British (1692) [city-level coords]"
+  },
+  {
+    "objectID": 503440,
+    "lat": 37.3891,
+    "lng": -5.9845,
+    "difficulty": "easy",
+    "notes": "Seville, Spain — Spanish (ca. 1780) [city-level coords]"
+  },
+  {
+    "objectID": 503443,
+    "lat": 53.5753,
+    "lng": 10.0153,
+    "difficulty": "easy",
+    "notes": "Hamburg, Germany — German (ca. 1685) [city-level coords]"
+  },
+  {
+    "objectID": 503467,
+    "lat": 49.4521,
+    "lng": 11.0767,
+    "difficulty": "easy",
+    "notes": "Nürnberg, Germany — German (mid-18th century) [city-level coords]"
+  },
+  {
+    "objectID": 503502,
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "difficulty": "easy",
+    "notes": "Paris, France — French (1850–55) [city-level coords]"
+  },
+  {
+    "objectID": 503503,
+    "lat": 35.6892,
+    "lng": 51.389,
+    "difficulty": "easy",
+    "notes": "Tehran, Iran (Persia) — Iranian (Persian) (ca. 1880) [city-level coords]"
+  },
+  {
+    "objectID": 503517,
+    "lat": 45.1327,
+    "lng": 10.0227,
+    "difficulty": "easy",
+    "notes": "Cremona, Italy — Italian (Cremona) (ca. 1560) [city-level coords]"
+  },
+  {
+    "objectID": 503523,
+    "lat": 30.2741,
+    "lng": 120.1551,
+    "difficulty": "easy",
+    "notes": "Hangchow, China — Chinese (1634) [city-level coords]"
+  },
+  {
+    "objectID": 503530,
+    "lat": 48.3705,
+    "lng": 10.8978,
+    "difficulty": "easy",
+    "notes": "Augsburg, Germany — German (ca. 1625) [city-level coords]"
+  },
+  {
+    "objectID": 503613,
+    "lat": 41.9028,
+    "lng": 12.4964,
+    "difficulty": "easy",
+    "notes": "Rome, Italy — Italian (ca. 1725) [city-level coords]"
+  },
+  {
+    "objectID": 503615,
+    "lat": 40.8518,
+    "lng": 14.2681,
+    "difficulty": "easy",
+    "notes": "Naples, Italy — Italian (1881) [city-level coords]"
+  },
+  {
+    "objectID": 503669,
+    "lat": 50.8503,
+    "lng": 4.3517,
+    "difficulty": "easy",
+    "notes": "Brussels, Belgium — Belgian (1830) [city-level coords]"
+  },
+  {
+    "objectID": 503673,
+    "lat": 52.3676,
+    "lng": 4.9041,
+    "difficulty": "easy",
+    "notes": "Amsterdam, Netherlands — Dutch (before 1727) [city-level coords]"
+  },
+  {
+    "objectID": 503677,
+    "lat": 48.2082,
+    "lng": 16.3738,
+    "difficulty": "easy",
+    "notes": "Vienna, Austria — Austrian (ca. 1790) [city-level coords]"
+  },
+  {
+    "objectID": 503703,
+    "lat": 49.4521,
+    "lng": 11.0767,
+    "difficulty": "easy",
+    "notes": "Nürnberg, Germany — German (ca. 1710–20) [city-level coords]"
+  },
+  {
+    "objectID": 503818,
+    "lat": 51.0504,
+    "lng": 13.7373,
+    "difficulty": "easy",
+    "notes": "Dresden, Germany — German (1694–1733) [city-level coords]"
+  },
+  {
+    "objectID": 503932,
+    "lat": 40.8518,
+    "lng": 14.2681,
+    "difficulty": "easy",
+    "notes": "probably Naples, Italy — Italian (ca. 1800) [city-level coords]"
+  },
+  {
+    "objectID": 503971,
+    "lat": 49.4521,
+    "lng": 11.0767,
+    "difficulty": "easy",
+    "notes": "Nürnberg, Germany — German (late 17th century) [city-level coords]"
+  },
+  {
+    "objectID": 504210,
+    "lat": 53.5753,
+    "lng": 10.0153,
+    "difficulty": "easy",
+    "notes": "Hamburg, Germany — German (ca. 1685) [city-level coords]"
+  },
+  {
+    "objectID": 504284,
+    "lat": 51.0504,
+    "lng": 13.7373,
+    "difficulty": "easy",
+    "notes": "Dresden, Germany — German (before 1807) [city-level coords]"
+  },
+  {
+    "objectID": 504497,
+    "lat": 50.4358,
+    "lng": 8.6642,
+    "difficulty": "easy",
+    "notes": "Butzbach, Germany — German (ca. 1750–57) [city-level coords]"
+  },
+  {
+    "objectID": 505399,
+    "lat": 49.4521,
+    "lng": 11.0767,
+    "difficulty": "easy",
+    "notes": "Nürnberg, Germany — German (ca. 1575) [city-level coords]"
+  },
+  {
+    "objectID": 505786,
+    "lat": 45.4654,
+    "lng": 9.1866,
+    "difficulty": "easy",
+    "notes": "Milan, Italy — Italian (1701) [city-level coords]"
+  },
+  {
+    "objectID": 506174,
+    "lat": 52.3759,
+    "lng": 9.732,
+    "difficulty": "easy",
+    "notes": "Hanover, Germany — Hanoverian (German) (1780) [city-level coords]"
+  },
+  {
+    "objectID": 543864,
+    "lat": 29.87,
+    "lng": 31.22,
+    "difficulty": "medium",
+    "notes": "Memphite Region, Egypt (ca. 1919–1885 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 543867,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1814–1805 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 543896,
+    "lat": 29.87,
+    "lng": 31.22,
+    "difficulty": "medium",
+    "notes": "Memphite Region, Egypt (ca. 2520–2494 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 543899,
+    "lat": 29.87,
+    "lng": 31.22,
+    "difficulty": "medium",
+    "notes": "Memphite Region, Egypt (ca. 2575–2465 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 543901,
+    "lat": 29.87,
+    "lng": 31.22,
+    "difficulty": "medium",
+    "notes": "Memphite Region, Egypt (ca. 2420–2389 B.C. or later) [region-level coords]"
+  },
+  {
+    "objectID": 543903,
+    "lat": 25,
+    "lng": 32.5,
+    "difficulty": "medium",
+    "notes": "Southern Upper Egypt, Egypt (ca. 2575–2465 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 543937,
+    "lat": 29.87,
+    "lng": 31.22,
+    "difficulty": "medium",
+    "notes": "Memphite Region, Egypt (ca. 2381–2323 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544056,
+    "lat": 28.5,
+    "lng": 30.7,
+    "difficulty": "medium",
+    "notes": "Middle Egypt, Egypt (ca. 1353–1336 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544060,
+    "lat": 28.5,
+    "lng": 30.7,
+    "difficulty": "medium",
+    "notes": "Middle Egypt, Egypt (ca. 1353–1336 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544066,
+    "lat": 30.8,
+    "lng": 32,
+    "difficulty": "medium",
+    "notes": "Eastern Delta, Egypt (ca. 1279–1213 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544070,
+    "lat": 29.87,
+    "lng": 31.22,
+    "difficulty": "medium",
+    "notes": "Memphite Region, Egypt (525–404 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544076,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1186–1070 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544077,
+    "lat": 25,
+    "lng": 32.5,
+    "difficulty": "medium",
+    "notes": "Southern Upper Egypt, Egypt (ca. 3100–2900 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544186,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1878–1840 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544210,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1981–1975 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544214,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1981–1975 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544227,
+    "lat": 28.5,
+    "lng": 30.7,
+    "difficulty": "medium",
+    "notes": "Middle Egypt, Egypt (ca. 1961–1878 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544228,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1981–1975 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544232,
+    "lat": 29.3,
+    "lng": 30.9,
+    "difficulty": "medium",
+    "notes": "Fayum Entrance Area, Egypt (ca. 1887–1878 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544319,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes or Northern Upper Egypt, Egypt (ca. 1981–1802 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544320,
+    "lat": 27.5,
+    "lng": 31,
+    "difficulty": "medium",
+    "notes": "Northern Upper Egypt, Egypt (ca. 1944 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544326,
+    "lat": 28.5,
+    "lng": 30.7,
+    "difficulty": "medium",
+    "notes": "Middle Egypt, Egypt (ca. 1850–1750 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544442,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1479–1458 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544450,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1479–1458 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544451,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1550–1479 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544453,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1525–1504 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544498,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1390–1352 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544501,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1390–1352 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544502,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1390–1352 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544509,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1390–1352 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544514,
+    "lat": 28.5,
+    "lng": 30.7,
+    "difficulty": "medium",
+    "notes": "Middle Egypt, Egypt (ca. 1390–1336 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544680,
+    "lat": 28.5,
+    "lng": 30.7,
+    "difficulty": "medium",
+    "notes": "Middle Egypt, Egypt (ca. 1353–1336 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544683,
+    "lat": 25,
+    "lng": 32.5,
+    "difficulty": "medium",
+    "notes": "Southern Upper Egypt|Middle Egypt, Egypt (ca. 1353–1336 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544686,
+    "lat": 28.5,
+    "lng": 30.7,
+    "difficulty": "medium",
+    "notes": "Middle Egypt, Egypt (ca. 1353–1336 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 544689,
+    "lat": 25.7402,
+    "lng": 32.6014,
+    "difficulty": "medium",
+    "notes": "Upper Egypt, Thebes, Egypt (ca. 1349–1330 B.C. or shortly thereafter) [region-level coords]"
+  },
+  {
+    "objectID": 545027,
+    "lat": 20,
+    "lng": 33,
+    "difficulty": "medium",
+    "notes": "Nubia, Egypt and Sudan (ca. 713–664 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 547771,
+    "lat": 20,
+    "lng": 33,
+    "difficulty": "medium",
+    "notes": "Nubia, Egypt and Sudan (ca. 712–664 B.C.) [region-level coords]"
+  },
+  {
+    "objectID": 662161,
+    "lat": 20.6236,
+    "lng": -103.235,
+    "difficulty": "easy",
+    "notes": "Tonalá, Mexico — Mexican (ca. 1675–1700) [city-level coords]"
+  },
+  {
+    "objectID": 662163,
+    "lat": 20.6236,
+    "lng": -103.235,
+    "difficulty": "easy",
+    "notes": "Tonalá, Mexico — Mexican (ca. 1675–1700) [city-level coords]"
+  },
+  {
+    "objectID": 679465,
+    "lat": 45.4408,
+    "lng": 12.3155,
+    "difficulty": "medium",
+    "notes": "Venice|Paris, Italy|France (1584) [city-level coords]"
+  },
+  {
+    "objectID": 681349,
+    "lat": 51.0543,
+    "lng": 3.7174,
+    "difficulty": "medium",
+    "notes": "Ghent, Belgium (1772) [city-level coords]"
+  },
+  {
+    "objectID": 681372,
+    "lat": 45.4654,
+    "lng": 9.1866,
+    "difficulty": "medium",
+    "notes": "Milan, Italy (1815) [city-level coords]"
+  },
+  {
+    "objectID": 681389,
+    "lat": 41.9028,
+    "lng": 12.4964,
+    "difficulty": "medium",
+    "notes": "Rome, Italy (1794) [city-level coords]"
+  },
+  {
+    "objectID": 681534,
+    "lat": 52.3676,
+    "lng": 4.9041,
+    "difficulty": "medium",
+    "notes": "Amsterdam, Netherlands (1697) [city-level coords]"
+  },
+  {
+    "objectID": 681546,
+    "lat": 52.3676,
+    "lng": 4.9041,
+    "difficulty": "medium",
+    "notes": "Amsterdam, Netherlands (1669) [city-level coords]"
+  },
+  {
+    "objectID": 681559,
+    "lat": 52.3676,
+    "lng": 4.9041,
+    "difficulty": "medium",
+    "notes": "Amsterdam, Netherlands (1749) [city-level coords]"
+  },
+  {
+    "objectID": 687670,
+    "lat": 41.9028,
+    "lng": 12.4964,
+    "difficulty": "medium",
+    "notes": "Rome, Italy — American (1868) [city-level coords]"
+  },
+  {
+    "objectID": 687677,
+    "lat": 41.9028,
+    "lng": 12.4964,
+    "difficulty": "medium",
+    "notes": "Rome, Italy — American (1868) [city-level coords]"
+  },
+  {
+    "objectID": 697348,
+    "lat": 47.2692,
+    "lng": 11.4041,
+    "difficulty": "medium",
+    "notes": "Innsbruck, Austria (1603) [city-level coords]"
+  },
+  {
+    "objectID": 699505,
+    "lat": 40.4168,
+    "lng": -3.7038,
+    "difficulty": "medium",
+    "notes": "Madrid, Spain (1633) [city-level coords]"
+  },
+  {
+    "objectID": 715005,
+    "lat": 39.9042,
+    "lng": 116.4074,
+    "difficulty": "medium",
+    "notes": "Beijing, China (1676) [city-level coords]"
+  },
+  {
+    "objectID": 716639,
+    "lat": 43.8429,
+    "lng": 10.5027,
+    "difficulty": "medium",
+    "notes": "Lucca, Italy (1758–1771) [city-level coords]"
+  },
+  {
+    "objectID": 716648,
+    "lat": 43.8429,
+    "lng": 10.5027,
+    "difficulty": "medium",
+    "notes": "Lucca, Italy (1765–1776) [city-level coords]"
+  },
+  {
+    "objectID": 717547,
+    "lat": 45.7833,
+    "lng": -100.8667,
+    "difficulty": "easy",
+    "notes": "Standing Rock Reservation, United States — Hunkpapa Lakota/ Teton Sioux, Native American (ca. 1885) [city-level coords]"
+  },
+  {
+    "objectID": 719486,
+    "lat": 19.4326,
+    "lng": -99.1332,
+    "difficulty": "easy",
+    "notes": "Mexico City, Mexico — Mexican (ca. 1690) [city-level coords]"
+  },
+  {
+    "objectID": 724625,
+    "lat": 43.7696,
+    "lng": 11.2558,
+    "difficulty": "medium",
+    "notes": "Firenze|Pisa, Italy|Italy (1802) [city-level coords]"
+  },
+  {
+    "objectID": 739504,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "London, England (1867) [city-level coords]"
+  },
+  {
+    "objectID": 739518,
+    "lat": 45.4408,
+    "lng": 12.3155,
+    "difficulty": "medium",
+    "notes": "Venice, Italy (1881) [city-level coords]"
+  },
+  {
+    "objectID": 751515,
+    "lat": 43.452,
+    "lng": -100.777,
+    "difficulty": "easy",
+    "notes": "Rosebud Reservation, United States — Sicaugu Oyate Lakota/ Teton Sioux, Native American (ca. 1885) [city-level coords]"
+  },
+  {
+    "objectID": 769318,
+    "lat": 51.2194,
+    "lng": 4.4025,
+    "difficulty": "easy",
+    "notes": "Antwerp, Peru — Peruvian (ca. 1710) [city-level coords]"
+  },
+  {
+    "objectID": 811179,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "London, England (1873–80) [city-level coords]"
+  },
+  {
+    "objectID": 813852,
+    "lat": 59.9343,
+    "lng": 30.3351,
+    "difficulty": "medium",
+    "notes": "St. Petersburg, Russia (1880s) [city-level coords]"
+  },
+  {
+    "objectID": 814025,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "London, England (1856) [city-level coords]"
+  },
+  {
+    "objectID": 815475,
+    "lat": 41.9028,
+    "lng": 12.4964,
+    "difficulty": "medium",
+    "notes": "Rome, Italy (1725) [city-level coords]"
+  },
+  {
+    "objectID": 821935,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "London, England (1791) [city-level coords]"
+  },
+  {
+    "objectID": 821938,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "London, England (1791) [city-level coords]"
+  },
+  {
+    "objectID": 839168,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "London, England (1893) [city-level coords]"
+  },
+  {
+    "objectID": 839174,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "London, England (1827) [city-level coords]"
+  },
+  {
+    "objectID": 839178,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "London, England (1815) [city-level coords]"
+  },
+  {
+    "objectID": 839804,
+    "lat": 52.3676,
+    "lng": 4.9041,
+    "difficulty": "medium",
+    "notes": "Amsterdam, Netherlands (1668) [city-level coords]"
+  },
+  {
+    "objectID": 845711,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "London, England (1812) [city-level coords]"
+  },
+  {
+    "objectID": 845712,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "Londong, England (1823) [city-level coords]"
+  },
+  {
+    "objectID": 845714,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "London, England (1892) [city-level coords]"
+  },
+  {
+    "objectID": 853476,
+    "lat": 43.7696,
+    "lng": 11.2558,
+    "difficulty": "medium",
+    "notes": "Florence, Italy (1564) [city-level coords]"
+  },
+  {
+    "objectID": 855856,
+    "lat": 34.6937,
+    "lng": 135.5023,
+    "difficulty": "medium",
+    "notes": "Ōsaka, Japan (1886) [city-level coords]"
+  },
+  {
+    "objectID": 894326,
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "difficulty": "medium",
+    "notes": "London, England (1753) [city-level coords]"
+  }
+]

@@ -35,7 +35,8 @@ function App() {
   if (appPhase === "splash") {
     return (
       <SplashScreen
-        onBegin={initGame}
+        onBegin={() => initGame()}
+        onPractice={() => initGame({ practice: true })}
         onViewResults={goToResults}
       />
     )
