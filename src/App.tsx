@@ -15,6 +15,7 @@ function App() {
     revealHint,
     nextRound,
     goToResults,
+    resetToSplash,
   } = useGameState()
 
   // On mount: check localStorage for today's game
@@ -50,7 +51,7 @@ function App() {
         </div>
       )
     }
-    return <ResultsScreen gameState={gameState} />
+    return <ResultsScreen gameState={gameState} onPlayAgain={resetToSplash} />
   }
 
   // playing | reveal

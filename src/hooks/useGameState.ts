@@ -16,6 +16,7 @@ export interface UseGameStateReturn {
   revealHint: (hintIndex: number) => void
   nextRound: () => void
   goToResults: () => void
+  resetToSplash: () => void
 }
 
 export function useGameState(): UseGameStateReturn {
@@ -188,6 +189,11 @@ export function useGameState(): UseGameStateReturn {
     setAppPhase("results")
   }, [])
 
+  const resetToSplash = useCallback(() => {
+    setAppPhase("splash")
+    setGameState(null)
+  }, [])
+
   return {
     gameState,
     appPhase,
@@ -197,5 +203,6 @@ export function useGameState(): UseGameStateReturn {
     revealHint,
     nextRound,
     goToResults,
+    resetToSplash,
   }
 }
