@@ -344,13 +344,19 @@ The CSV `MetObjects.csv` (612K rows) is the full Met collection export. It conta
    - Leaflet map resize handling: call `map.invalidateSize()` when layout changes (e.g., bottom sheet expand/collapse).
    - iOS Safari: handle viewport height issues with `100dvh` instead of `100vh`.
 
-6. **Accessibility basics** (v1 scope):
+6. **Met API rate limiting**:
+   - The Met API requests a maximum of 80 requests per second. We fetch up to 10 objects at game start via `prefetchDailyObjects`, which is well within this limit in isolation. However, be a good citizen:
+   - Add a small stagger to `prefetchDailyObjects` — fire requests in batches of 5 with a ~50ms gap between batches rather than all 10 simultaneously (`Promise.all` → chunked with a delay).
+   - If the API returns a 429 (Too Many Requests), back off and retry after 1 second (up to 2 retries).
+   - Do not implement any aggressive polling or background prefetching that could accumulate requests.
+
+7. **Accessibility basics** (v1 scope):
    - Ensure sufficient color contrast (WCAG AA).
    - All images have alt text (object title).
    - Buttons are keyboard-focusable.
    - Timer has an aria-live region so screen readers announce time warnings.
 
-7. **Commit** — Hardening pass.
+8. **Commit** — Hardening pass.
 
 ### 🧑 User action required
 - None.
@@ -359,26 +365,69 @@ The CSV `MetObjects.csv` (612K rows) is the full Met collection export. It conta
 
 ## Phase 7: Build & Deploy
 
-**Goal:** App is live on the internet.
+**Goal:** App is live on the VPS droplet.
+
+The app is a fully static Vite build (HTML + JS + CSS + JSON). No Node.js runtime is needed on the server — just a web server serving static files.
 
 ### Steps
 
-1. **Production build**:
-   - `npm run build` — verify no errors, check bundle size.
-   - Ensure `public/data/seed-objects.json` is included in the build output.
+1. **Production build** (local):
+   - `npm run build` — outputs to `dist/`.
+   - Verify no errors, check bundle size.
+   - Confirm `dist/data/seed-objects.json` is present (Vite copies `public/` into `dist/`).
 
-2. **Vercel deployment**:
-   - Connect the GitHub repo to Vercel (or run `npx vercel` for CLI deploy).
-   - Framework preset: Vite.
-   - No environment variables needed (no API keys).
-   - Verify the deployed URL works end-to-end.
+2. **Transfer to VPS**:
+   - Copy the `dist/` directory to the server:
+     ```bash
+     rsync -avz --delete dist/ user@your-droplet-ip:/var/www/stolen-antiquities/
+     ```
+   - Or use `scp -r dist/ user@your-droplet-ip:/var/www/stolen-antiquities/`
 
-3. **Domain (optional)**:
-   - If the user has `stolenantiquities.app` or similar, configure it in Vercel.
+3. **Web server config (nginx recommended)**:
+   - Create a new nginx site config at `/etc/nginx/sites-available/stolen-antiquities`:
+     ```nginx
+     server {
+         listen 80;
+         server_name yourdomain.com;
+         root /var/www/stolen-antiquities;
+         index index.html;
 
-4. **Final smoke test**:
-   - Play a full game on the deployed URL on both desktop and mobile.
+         # SPA fallback — serve index.html for all routes
+         location / {
+             try_files $uri $uri/ /index.html;
+         }
+
+         # Cache static assets aggressively
+         location /assets/ {
+             expires 1y;
+             add_header Cache-Control "public, immutable";
+         }
+
+         # Don't cache index.html or seed data
+         location ~* \.(html|json)$ {
+             expires off;
+             add_header Cache-Control "no-cache";
+         }
+     }
+     ```
+   - Enable: `ln -s /etc/nginx/sites-available/stolen-antiquities /etc/nginx/sites-enabled/`
+   - Test: `nginx -t` then `systemctl reload nginx`
+
+4. **HTTPS (strongly recommended)**:
+   - Use Certbot: `certbot --nginx -d yourdomain.com`
+   - Auto-renews via systemd timer.
+
+5. **Domain**:
+   - Point your domain's A record to the droplet IP.
+
+6. **Final smoke test**:
+   - Play a full game on the live URL on both desktop and mobile.
    - Verify: daily selection is the same across devices, localStorage persists, share text is correct, Met API images load.
+   - Check browser console for any mixed-content or CORS errors.
+
+### 🧑 User action required
+- SSH access to the droplet and the domain's DNS settings.
+- Confirm the server already has nginx installed, or install it (`apt install nginx`).
 
 5. **Commit** — Any deploy-related config changes.
 

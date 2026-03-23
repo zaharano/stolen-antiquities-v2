@@ -30,3 +30,7 @@ MetObjects.csv
 .env
 .env.*
 !.env.example
+
+deploy.sh
+
+MetObjects.csv
