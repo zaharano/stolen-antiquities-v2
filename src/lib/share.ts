@@ -4,6 +4,7 @@ import { getDayNumber } from "./scoring"
 export const MEDAL_EMOJIS: Record<Medal, string> = {
   curator: "🏛️",
   close: "🎯",
+  distant: "🗺️",
   lost: "❌",
 }
 

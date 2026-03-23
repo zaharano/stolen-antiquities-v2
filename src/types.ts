@@ -1,5 +1,5 @@
 export type Difficulty = "easy" | "medium" | "hard"
-export type Medal = "curator" | "close" | "lost"
+export type Medal = "curator" | "close" | "distant" | "lost"
 export type GamePhase = "splash" | "playing" | "reveal" | "results"
 
 export interface SeedObject {

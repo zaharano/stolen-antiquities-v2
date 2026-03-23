@@ -95,7 +95,7 @@ export function useGameState(): UseGameStateReturn {
       const { lat: correctLat, lng: correctLng } = round.seed
       const distanceKm = calculateDistance(lat, lng, correctLat, correctLng)
       const score = calculateScore(distanceKm, round.hintsUsed)
-      const medal = getMedal(distanceKm, false)
+      const medal = getMedal(distanceKm, score, false)
 
       const updatedRound: GameRound = {
         ...round,
