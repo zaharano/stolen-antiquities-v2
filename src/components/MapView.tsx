@@ -34,6 +34,7 @@ export interface MapViewProps {
   onPinPlace: (lat: number, lng: number) => void
   showReveal: boolean
   interactive: boolean
+  roundKey: number  // changes each round — triggers view reset
 }
 
 // Inner component to handle map click events
@@ -50,6 +51,21 @@ function ClickHandler({
       onPinPlace(e.latlng.lat, e.latlng.lng)
     },
   })
+  return null
+}
+
+// Inner component to reset view to world level on each new round
+function ViewResetter({ roundKey }: { roundKey: number }) {
+  const map = useMap()
+  const prevRoundKey = useRef(roundKey)
+
+  useEffect(() => {
+    if (roundKey !== prevRoundKey.current) {
+      map.flyTo([20, 0], 2, { duration: 0.6 })
+      prevRoundKey.current = roundKey
+    }
+  }, [roundKey, map])
+
   return null
 }
 
@@ -83,6 +99,7 @@ export function MapView({
   onPinPlace,
   showReveal,
   interactive,
+  roundKey,
 }: MapViewProps) {
   return (
     <MapContainer
@@ -101,6 +118,7 @@ export function MapView({
       />
 
       <ClickHandler onPinPlace={onPinPlace} interactive={interactive} />
+      <ViewResetter roundKey={roundKey} />
 
       <BoundsFitter
         playerPin={playerPin}
@@ -119,18 +137,25 @@ export function MapView({
       )}
 
       {/* Dashed animated line between guess and correct — only on reveal */}
-      {showReveal && playerPin && correctPin && (
-        <Polyline
-          positions={[playerPin, correctPin]}
-          className="leaflet-reveal-line"
-          pathOptions={{
-            color: "#E63B2E",
-            weight: 2,
-            dashArray: "6 4",
-            opacity: 0.85,
-          }}
-        />
-      )}
+      {showReveal && playerPin && correctPin && (() => {
+        // Adjust longitude so Leaflet draws the shorter arc across the antimeridian
+        let lng2 = correctPin[1]
+        const lngDiff = lng2 - playerPin[1]
+        if (lngDiff > 180) lng2 -= 360
+        else if (lngDiff < -180) lng2 += 360
+        return (
+          <Polyline
+            positions={[playerPin, [correctPin[0], lng2]]}
+            className="leaflet-reveal-line"
+            pathOptions={{
+              color: "#E63B2E",
+              weight: 2,
+              dashArray: "6 4",
+              opacity: 0.85,
+            }}
+          />
+        )
+      })()}
     </MapContainer>
   )
 }

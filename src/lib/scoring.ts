@@ -28,12 +28,13 @@ export function calculateScore(
   distanceKm: number,
   hintsUsed: number
 ): number {
-  // Full points within 200km, then exponential decay
-  // ~600 at 1000km, ~215 at 3000km, still non-zero at 10000km
+  // Full points within 400km, then steep decay terminating at 4000km
+  // p=6: ~710 at 600km, ~408 at 900km, ~112 at 1500km, ~30 at 2000km, 0 at 4000km
+  const t = Math.min(1, (distanceKm - 400) / 3600)
   const baseScore =
-    distanceKm <= 300
+    distanceKm <= 400
       ? 1000
-      : Math.round(1000 * Math.exp(-(distanceKm - 300) / 3750))
+      : Math.max(0, Math.round(1000 * Math.pow(1 - t, 6)))
 
   const penalized = baseScore - hintsUsed * 75
   return Math.max(0, penalized)
@@ -41,12 +42,13 @@ export function calculateScore(
 
 export function getMedal(
   distanceKm: number,
+  score: number,
   timedOut: boolean
 ): Medal {
-  if (timedOut) return "lost"
-  if (distanceKm <= 300) return "curator"
+  if (timedOut || score === 0) return "lost"
+  if (distanceKm <= 400) return "curator"
   if (distanceKm <= 1500) return "close"
-  return "lost"
+  return "distant"
 }
 
 const EPOCH = new Date("2026-03-01T00:00:00Z").getTime()

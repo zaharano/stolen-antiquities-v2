@@ -19,9 +19,6 @@ interface HintDefinition {
 function getHints(round: GameRound): HintDefinition[] {
   const hints: HintDefinition[] = []
   if (round.metData) {
-    if (round.metData.culture) {
-      hints.push({ index: hints.length, label: "Culture / Region", content: round.metData.culture })
-    }
     if (round.metData.medium) {
       hints.push({ index: hints.length, label: "Medium", content: round.metData.medium })
     }

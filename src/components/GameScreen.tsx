@@ -24,7 +24,7 @@ export function GameScreen({
   onNextRound,
 }: GameScreenProps) {
   const [pendingPin, setPendingPin] = useState<[number, number] | null>(null)
-  const [mobileExpanded, setMobileExpanded] = useState(false)
+  const [mobileExpanded, setMobileExpanded] = useState(true)
 
   const currentRoundIndex = gameState.currentRound
   const round = gameState.rounds[currentRoundIndex]
@@ -46,7 +46,7 @@ export function GameScreen({
 
   const handleNextRound = () => {
     setPendingPin(null)
-    setMobileExpanded(false)
+    setMobileExpanded(true)
     onNextRound()
   }
 
@@ -86,6 +86,7 @@ export function GameScreen({
           onPinPlace={handlePinPlace}
           showReveal={isReveal}
           interactive={isPlaying}
+          roundKey={gameState.currentRound}
         />
 
         {/* ── Mobile: timer bar floated over map top ── */}

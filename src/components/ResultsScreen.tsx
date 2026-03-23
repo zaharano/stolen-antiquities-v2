@@ -16,27 +16,18 @@ delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
   ._getIconUrl
 L.Icon.Default.mergeOptions({ iconRetinaUrl: "", iconUrl: "", shadowUrl: "" })
 
-// Red pushpin SVG for player guess
-const playerIcon = L.divIcon({
-  html: `<svg width="20" height="30" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24s12-15 12-24C24 5.373 18.627 0 12 0z" fill="#E63B2E"/>
-    <circle cx="12" cy="12" r="4" fill="white"/>
-  </svg>`,
-  className: "",
-  iconSize: [20, 30],
-  iconAnchor: [10, 30],
-})
-
-// Muted green pin for correct answer
-const correctIcon = L.divIcon({
-  html: `<svg width="20" height="30" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24s12-15 12-24C24 5.373 18.627 0 12 0z" fill="#4A7C59"/>
-    <circle cx="12" cy="12" r="4" fill="white"/>
-  </svg>`,
-  className: "",
-  iconSize: [20, 30],
-  iconAnchor: [10, 30],
-})
+function makeNumberedIcon(n: number, fill: string, textColor: string) {
+  return L.divIcon({
+    html: `<svg width="24" height="36" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24s12-15 12-24C24 5.373 18.627 0 12 0z" fill="${fill}"/>
+      <circle cx="12" cy="12" r="7" fill="white"/>
+      <text x="12" y="16" text-anchor="middle" font-size="9" font-family="monospace" font-weight="bold" fill="${textColor}">${n}</text>
+    </svg>`,
+    className: "",
+    iconSize: [24, 36],
+    iconAnchor: [12, 36],
+  })
+}
 
 // ─── Props ─────────────────────────────────────────────────────────────────
 
@@ -106,6 +97,7 @@ function RoundCard({ round }: { round: GameRound }) {
   const medalEmoji = round.medal ? MEDAL_EMOJIS[round.medal] : "⬜"
   const score = round.score ?? 0
   const isUnavailable = round.metData === null
+  const metUrl = `https://www.metmuseum.org/art/collection/search/${round.seed.objectID}`
 
   return (
     <div
@@ -114,13 +106,18 @@ function RoundCard({ round }: { round: GameRound }) {
         boxShadow: "0 1px 4px rgba(44,36,22,0.08), 0 0 0 1px rgba(212,197,169,0.3)",
       }}
     >
-      {/* Thumbnail */}
-      <div className="flex-shrink-0 w-12 h-12 rounded overflow-hidden border border-sepia bg-cream-dark">
+      {/* Thumbnail — links to Met page */}
+      <a
+        href={metUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex-shrink-0 w-12 h-12 rounded overflow-hidden border border-sepia bg-cream-dark block"
+      >
         {round.metData?.primaryImageSmall ? (
           <img
             src={round.metData.primaryImageSmall}
             alt={round.metData.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover hover:opacity-80 transition-opacity"
             loading="lazy"
           />
         ) : (
@@ -130,17 +127,20 @@ function RoundCard({ round }: { round: GameRound }) {
             </span>
           </div>
         )}
-      </div>
+      </a>
 
       {/* Middle: title + status */}
       <div className="flex-1 min-w-0">
-        <p
-          className="text-ink text-sm font-medium leading-snug truncate"
+        <a
+          href={metUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-ink text-sm font-medium leading-snug truncate hover:underline block"
           style={{ fontFamily: "'Source Serif 4', serif" }}
           title={round.metData?.title ?? "Unknown object"}
         >
           {round.metData?.title ?? "Object unavailable"}
-        </p>
+        </a>
         <p
           className="text-ink-light text-xs mt-0.5"
           style={{ fontFamily: "'Source Serif 4', serif" }}
@@ -230,29 +230,39 @@ function OverviewMap({ rounds }: { rounds: GameRound[] }) {
       <BoundsFitter positions={allPositions} />
 
       {rounds.map((round, i) => (
-        <MapMarkersForRound key={i} round={round} />
+        <MapMarkersForRound key={i} round={round} roundNumber={i + 1} />
       ))}
     </MapContainer>
   )
 }
 
-function MapMarkersForRound({ round }: { round: GameRound }) {
+function MapMarkersForRound({ round, roundNumber }: { round: GameRound; roundNumber: number }) {
   const correctPos: [number, number] = [round.seed.lat, round.seed.lng]
+  const playerIcon = makeNumberedIcon(roundNumber, "#E63B2E", "#E63B2E")
+  const correctIcon = makeNumberedIcon(roundNumber, "#4A7C59", "#4A7C59")
+
+  // Adjust longitude so the line takes the short arc across the antimeridian
+  let guessLng = round.playerGuess?.[1] ?? 0
+  if (round.playerGuess) {
+    const diff = guessLng - correctPos[1]
+    if (diff > 180) guessLng -= 360
+    else if (diff < -180) guessLng += 360
+  }
 
   return (
     <>
-      {/* Correct location — green pin */}
+      {/* Correct location — green numbered pin */}
       <Marker position={correctPos} icon={correctIcon} />
 
-      {/* Player guess — red pin (only if placed) */}
+      {/* Player guess — red numbered pin (only if placed) */}
       {round.playerGuess && (
-        <Marker position={round.playerGuess} icon={playerIcon} />
+        <Marker position={[round.playerGuess[0], guessLng]} icon={playerIcon} />
       )}
 
       {/* Dashed red line from guess to correct */}
       {round.playerGuess && (
         <Polyline
-          positions={[round.playerGuess, correctPos]}
+          positions={[[round.playerGuess[0], guessLng], correctPos]}
           pathOptions={{
             color: "#E63B2E",
             weight: 2,
@@ -398,6 +408,12 @@ export function ResultsScreen({ gameState, onPlayAgain }: ResultsScreenProps) {
             >
               Object Breakdown
             </h3>
+            <p
+              className="text-ink-light text-sm mb-3 leading-relaxed"
+              style={{ fontFamily: "'Source Serif 4', serif" }}
+            >
+              Click any object to explore it in the Met's collection — many include 3D views, curator audio clips, provenance research, and more.
+            </p>
             <div className="space-y-2">
               {gameState.rounds.map((round, i) => (
                 <RoundCard key={i} round={round} />

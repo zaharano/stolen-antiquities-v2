@@ -47,6 +47,28 @@ export function Timer({ seconds, onExpire, running }: TimerProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [running])
 
+  // Handle tab backgrounding: when the tab becomes visible again, check if
+  // time has already elapsed (browsers throttle setInterval in background tabs)
+  useEffect(() => {
+    if (!running) return
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && startTimeRef.current && !expiredRef.current) {
+        const elapsed = (Date.now() - startTimeRef.current) / 1000
+        if (elapsed >= seconds) {
+          expiredRef.current = true
+          if (intervalRef.current) clearInterval(intervalRef.current)
+          setRemaining(0)
+          onExpire()
+        }
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [running])
+
   const displaySeconds = Math.ceil(remaining)
   const fraction = remaining / seconds
 
