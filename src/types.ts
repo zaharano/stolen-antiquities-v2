@@ -44,3 +44,10 @@ export interface GameState {
   phase: GamePhase
   completed: boolean
 }
+
+export interface GameHistoryEntry {
+  date: string               // "YYYY-MM-DD"
+  dayNumber: number
+  score: number
+  medals: (Medal | null)[]   // one per round
+}

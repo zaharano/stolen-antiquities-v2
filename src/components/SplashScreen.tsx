@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
-import { getTodayDateString, hasCompletedToday } from "../lib/storage"
+import { getTodayDateString, hasCompletedToday, getGameHistory } from "../lib/storage"
+import { MEDAL_EMOJIS } from "../lib/share"
+import type { GameHistoryEntry } from "../types"
 
 interface SplashScreenProps {
   onBegin: () => void
@@ -29,10 +31,36 @@ function getCountdownToMidnightUTC(): string {
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
 }
 
+function HistoryRow({ entry }: { entry: GameHistoryEntry }) {
+  const medals = entry.medals.map((m) => (m ? MEDAL_EMOJIS[m] : "⬜")).join("")
+  return (
+    <div className="flex items-center justify-between gap-3 py-2 border-b border-sepia last:border-0">
+      <div>
+        <span
+          className="text-xs text-ink-light"
+          style={{ fontFamily: "'JetBrains Mono', monospace" }}
+        >
+          #{entry.dayNumber} · {formatDate(entry.date)}
+        </span>
+        <div className="text-sm leading-none mt-0.5" style={{ letterSpacing: "0.05em" }}>
+          {medals}
+        </div>
+      </div>
+      <span
+        className="text-base font-medium text-ink tabular-nums"
+        style={{ fontFamily: "'JetBrains Mono', monospace" }}
+      >
+        {entry.score.toLocaleString()}
+      </span>
+    </div>
+  )
+}
+
 export function SplashScreen({ onBegin, onPractice, onViewResults }: SplashScreenProps) {
   const alreadyPlayed = hasCompletedToday()
   const todayString = getTodayDateString()
   const [countdown, setCountdown] = useState(getCountdownToMidnightUTC())
+  const history: GameHistoryEntry[] = getGameHistory()
 
   useEffect(() => {
     if (!alreadyPlayed) return
@@ -127,6 +155,22 @@ export function SplashScreen({ onBegin, onPractice, onViewResults }: SplashScree
           </button>
         )}
       </div>
+
+      {history.length > 0 && (
+        <div className="mt-12 w-full max-w-xs">
+          <h3
+            className="text-ink text-sm text-center mb-3 border-b border-sepia pb-2"
+            style={{ fontFamily: "'DM Serif Display', serif" }}
+          >
+            Past Games
+          </h3>
+          <div className="max-h-52 overflow-y-auto">
+            {history.map((entry) => (
+              <HistoryRow key={entry.date} entry={entry} />
+            ))}
+          </div>
+        </div>
+      )}
 
       <p
         className="mt-16 text-sepia-dark text-xs text-center"

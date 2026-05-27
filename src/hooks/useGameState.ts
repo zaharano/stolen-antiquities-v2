@@ -3,7 +3,7 @@ import type { GameState, GameRound, SeedObject } from "../types"
 import { getDailyObjects } from "../lib/daily-selection"
 import { prefetchDailyObjects } from "../lib/met-api"
 import { calculateDistance, calculateScore, getMedal } from "../lib/scoring"
-import { saveGameState, loadGameState, getTodayDateString } from "../lib/storage"
+import { saveGameState, loadGameState, getTodayDateString, appendGameToHistory } from "../lib/storage"
 
 export type AppPhase = "splash" | "playing" | "reveal" | "results"
 
@@ -183,6 +183,7 @@ export function useGameState(): UseGameStateReturn {
         completed: true,
       }
       persist(updatedState)
+      if (!practiceModeRef.current) appendGameToHistory(updatedState)
       setGameState(updatedState)
       setAppPhase("results")
     } else {
