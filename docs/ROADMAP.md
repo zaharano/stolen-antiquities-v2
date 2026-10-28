@@ -18,27 +18,43 @@ before. Inside a phase, items are roughly in priority order.
 
 ## Phase 0: Stabilize (≈ ½ day)
 
+Done:
 - [x] Lockfile drift fixed (`npm ci` failed before this revival commit).
-- [ ] Add **Vitest** and unit tests for `src/lib/*`: `calculateScore` table, `getMedal`,
-      `getDailyObjects` golden output for a few dates (pins determinism), `getDayNumber`.
-- [ ] Get `npm run lint` to zero: replace setState-in-effect patterns (key the component on
-      round instead, e.g. `<Timer key={round} …/>` and `<ObjectPanel key={objectID} …/>`),
-      delete or wire up the unused geocode helpers, fix `persist` deps.
-- [ ] Fix the cheap correctness bugs from AGENTS.md: `submitTimeout` → `persist`; one Timer;
-      hint-cost label matches scoring; the "Perfect" label; error/timeout handling in
-      `initGame`; an honest clipboard fallback.
-- [ ] Add a small GitHub Action: `npm ci && npm run lint && npm test && npm run build`.
+- [x] **Vitest** with unit tests for `src/lib/*`: score table, medals, `getDailyObjects`
+      golden output (pins determinism), day number, share text, storage, tile config.
+- [x] `npm run lint` at zero: per-round components are keyed instead of resetting state in
+      effects; the unused geocode helpers are marked for Phase 4; `persist` deps fixed.
+- [x] Correctness bugs: `submitTimeout` → `persist`; one layout mounted (one Timer); hint
+      cost label uses `HINT_PENALTY`; "Perfect" → "Curator"; seed fetch errors show a retry
+      screen; Met requests time out after 8 s; honest clipboard fallback; share text uses
+      stolen-antiquities.com.
+- [x] GitHub Action: `npm ci && npm run lint && npm test && npm run build`.
 
 ## Phase 1: Fix the map
 
-**Diagnosis (likely):** tiles are CARTO Positron raster with no key. CARTO now requires a
-free API key, and keyless tiles come back with an "API KEY REQUIRED" watermark rather than
-an error. (I couldn't confirm this live from the sandbox, because the network blocks CARTO
-and the Met. Check in a browser: if the tiles show that watermark, this is it.)
+**Diagnosis (confirmed):** the tiles were keyless CARTO Positron, and CARTO now watermarks
+keyless tiles with "API KEY REQUIRED".
 
-1. **Centralize the tile config** in `src/lib/map-tiles.ts` (URL, attribution, subdomains,
-   maxZoom, key from `import.meta.env.VITE_TILE_KEY`). Both `MapView` and `ResultsScreen`
-   import it, and the duplicated Leaflet icon hack moves there too.
+Done:
+- [x] Tile config centralized in `src/lib/map-tiles.ts` plus `<BaseTileLayer />`, which
+      also holds the Leaflet icon fix.
+- [x] Switched to **Stadia Alidade Smooth** (style selectable via `VITE_MAP_STYLE`).
+- [x] Sepia filter moved to the tile pane, and the map container is isolated.
+- [x] Automatic OSM fallback after repeated tile errors.
+- [x] Met requests time out (8 s).
+
+**Owner action:** register `stolen-antiquities.com` in the Stadia dashboard
+("Manage Properties" → Authentication Configuration). Until then, production gets 401s and
+runs on the OSM fallback.
+
+Remaining:
+- [ ] Try `stamen_toner_lite` and `stamen_watercolor` on the real site and pick a favourite.
+- [ ] Retry `null` Met objects when the round starts.
+- [ ] Snapshot Met metadata into the seed file at build time (below).
+
+Original options considered, for reference:
+
+1. Centralize the tile config (done).
 2. **Pick a provider.** Options, in order of recommendation:
    - **Stadia Maps, Stamen Watercolor or Toner Lite.** Watercolor fits the "paper map on a
      desk" art direction perfectly, and Toner Lite is the clean option. Free tier for
@@ -51,10 +67,10 @@ and the Met. Check in a browser: if the tiles show that watermark, this is it.)
      `@maplibre/maplibre-gl-leaflet`), which is a bigger change and a heavier bundle.
    - Avoid the raw `tile.openstreetmap.org` servers for production; their usage policy
      discourages it.
-3. **Apply the sepia filter to `.leaflet-tile-pane` only**, not `.leaflet-container`. That
+3. (done) **Apply the sepia filter to `.leaflet-tile-pane` only**, not `.leaflet-container`. That
    keeps the pins and controls their true colors and removes the stacking-context trap
    (see Phase 2).
-4. Add a **tile-error fallback**: on `tileerror` past a threshold, swap to a secondary
+4. (done) Add a **tile-error fallback**: on `tileerror` past a threshold, swap to a secondary
    provider and log it.
 5. While here, make the Met side more robust:
    - Add a fetch timeout (AbortController, ~8 s).
@@ -258,10 +274,8 @@ confusing.
 
 ## Open questions for the owner
 
-1. What exactly is broken on the map today: a watermark, blank tiles, or something else?
-2. Is the game commercial (ads or donations) or not? That decides between the free tile
-   tiers and a paid plan.
+1. ~~What's broken on the map?~~ The CARTO watermark. Fixed in Phase 1.
+2. ~~Commercial?~~ No, so the free Stadia tier fits.
 3. Should the timer stay at 30 s on mobile? Pinch-zoom costs time; 40 s on touch devices
    is an option.
-4. For the hosting domain: share text hard-codes `stolenantiquities.app`. Is that still
-   the URL?
+4. ~~Domain?~~ stolen-antiquities.com; the share text now uses it.

@@ -19,7 +19,7 @@ there's a results screen and a shareable emoji grid.
 - **100% client-side.** No backend, no auth. Vite + React 19 + TypeScript, Tailwind v4,
   Leaflet via `react-leaflet` v5.
 - **Answers live in a static JSON file** (`public/data/seed-objects.json`). Object metadata
-  and images are fetched from the Met API at runtime.
+  and images are fetched from the Met API at runtime. Map tiles come from Stadia Maps.
 - **State lives in `localStorage`.**
 
 ## Commands
@@ -28,7 +28,8 @@ there's a results screen and a shareable emoji grid.
 npm ci            # install (lockfile must stay in sync; use `npm install` to update it)
 npm run dev       # Vite dev server
 npm run build     # tsc -b && vite build  → dist/
-npm run lint      # eslint (currently has pre-existing errors; see "Known issues")
+npm run lint      # eslint (clean; keep it that way)
+npm test          # vitest run (unit tests for src/lib/*)
 npm run preview   # serve dist/
 
 # Seed-list pipeline (offline, only when changing the object pool)
@@ -36,8 +37,9 @@ npx tsx scripts/curate-seed-list.ts      # needs MetObjects.csv at repo root (gi
 npx tsx scripts/geocode-and-finalize.ts  # candidates.json → public/data/seed-objects.json (deterministic)
 ```
 
-There are **no tests** yet. `src/lib/*` is pure and is the right place to start adding them
-(Vitest suggested). Deploy is a gitignored local `deploy.sh`; the GDD targets Vercel.
+CI (`.github/workflows/ci.yml`) runs `npm ci`, lint, test and build on PRs and pushes to
+`main`. Tests live next to the code as `src/lib/*.test.ts`. Deploy is a gitignored local
+`deploy.sh`. The live site is **stolen-antiquities.com**.
 
 ---
 
@@ -48,16 +50,19 @@ src/
   main.tsx                 React root; imports leaflet.css + index.css
   App.tsx                  Phase router: splash → playing/reveal → results
   types.ts                 SeedObject, MetObject, GameRound, GameState, GameHistoryEntry, Medal
-  hooks/useGameState.ts    THE game state machine (init, guess, timeout, hints, next, results)
+  hooks/useGameState.ts    THE game state machine (init, guess, timeout, hints, next, results, loadError)
+  hooks/useMediaQuery.ts   Live CSS media query (picks desktop vs mobile layout)
   lib/
     daily-selection.ts     Date → 10 seeds (seeded PRNG + Fisher–Yates). Determinism lives here.
     scoring.ts             Haversine distance, score curve, hint penalty, medals, day number (epoch 2026-03-01)
-    met-api.ts             Fetch Met objects (batches of 5, retry on 429)
+    met-api.ts             Fetch Met objects (batches of 5, retry on 429, 8 s timeout)
+    map-tiles.ts           Tile provider config (Stadia styles, OSM fallback), env-driven
     storage.ts             localStorage read/write, UTC "today", history
     share.ts               Share text + MEDAL_EMOJIS
   components/
     SplashScreen.tsx       Title, Begin / View Results / Practice, past-games list
     GameScreen.tsx         Layout: desktop side panel (lg+) vs mobile bottom sheet; mounts Timer, MapView, ObjectPanel, RevealOverlay
+    BaseTileLayer.tsx      The one TileLayer both maps use; falls back to OSM if the primary fails
     MapView.tsx            Leaflet map for play: click-to-pin, reset view per round, fit bounds on reveal
     ObjectPanel.tsx        Image (+ full-res modal), title/date, progressive hints
     RevealOverlay.tsx      "Confirm Placement" button, then the reveal card (medal, distance, count-up score)
@@ -80,8 +85,10 @@ docs/  GDD.md (game design), DESIGN.md (visual system — still authoritative), 
 2. If `localStorage["stolen-antiquities-YYYY-MM-DD"]` exists, resume it (`results` if
    completed, else `playing`/`reveal`). **The saved state embeds the seeds and fetched Met
    data**, so a resumed game never re-runs selection or re-fetches.
-3. Otherwise fetch `/data/seed-objects.json` → `getDailyObjects(date, seeds)` →
-   `prefetchDailyObjects()` (all 10 Met objects up front; failures become `metData: null`).
+3. Otherwise show the loading screen, fetch `/data/seed-objects.json` →
+   `getDailyObjects(date, seeds)` → `prefetchDailyObjects()` (all 10 Met objects up front;
+   individual failures become `metData: null`). If the seed list fails, `loadError` is set
+   and `App` shows an error screen with "Try again".
 4. Per round: map click sets a pending pin (local state in `GameScreen`) → Confirm →
    `submitGuess` computes distance/score/medal → phase `reveal` → `nextRound`.
    Timer expiry → `submitTimeout` (score 0, medal `lost`).
@@ -100,16 +107,17 @@ docs/  GDD.md (game design), DESIGN.md (visual system — still authoritative), 
 - **localStorage schema.** Keys: `stolen-antiquities-<date>` (full `GameState`) and
   `stolen-antiquities-history` (`GameHistoryEntry[]`, newest first). There is no schema
   version field; add one before making breaking changes to `GameState`.
-- **Practice mode** must never write to storage. Writes go through `persist()` in
-  `useGameState`, which checks `practiceModeRef` (but see the `submitTimeout` bug below).
+- **Practice mode** must never write to storage. All writes go through `persist()` in
+  `useGameState`, which checks `practiceModeRef`. Never call `saveGameState` directly.
 - **Answers are public** (they're in the static JSON). Accepted for v1; it matters only if
   leaderboards are added.
 
 ### Scoring (as implemented, `src/lib/scoring.ts`)
 
 - ≤ 400 km → 1000. Then `1000·(1−t)^6` with `t = (d−400)/3600`, reaching 0 at 4000 km.
-  Roughly: 600 km ≈ 709, 900 km ≈ 408, 1500 km ≈ 112, 2000 km ≈ 29.
-- Hint penalty: **−75 per hint used**, floored at 0.
+  Roughly: 600 km ≈ 710, 900 km ≈ 408, 1500 km ≈ 112, 2000 km ≈ 29.
+- Hint penalty: **`HINT_PENALTY` (75) per hint used**, floored at 0. The hint buttons read
+  the same constant.
 - Medals: `curator` ≤ 400 km, `close` ≤ 1500 km, `distant` otherwise, `lost` if timed out or
   score 0. Emoji in `share.ts`.
 - The curve is the same everywhere in the world. Region-aware scoring is a roadmap item.
@@ -121,12 +129,19 @@ deliberately *not* a hint (it usually gives the answer away). Hints unlock in or
 
 ### Map tiles
 
-Both `MapView.tsx:114` and `ResultsScreen.tsx:224` hard-code CARTO Positron raster tiles
-(`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png`) with no API key. CARTO now
-requires a (free) API key for its basemaps. Keyless requests still return 200, but the tile
-image carries an **"API KEY REQUIRED" watermark**, so the map looks broken without any
-error in the console. Put the tile config in one shared module when fixing this. Options
-are in the roadmap.
+Both maps render `<BaseTileLayer />`, configured in `src/lib/map-tiles.ts`.
+
+- **Primary: Stadia Maps**, style from `VITE_MAP_STYLE` (`alidade_smooth` by default; also
+  `stamen_toner_lite`, `stamen_watercolor`). Free for non-commercial use (this game is
+  non-commercial). Browsers authenticate by **domain**: `stolen-antiquities.com` must be
+  registered under "Manage Properties" in the Stadia dashboard. localhost needs no setup.
+  `VITE_STADIA_API_KEY` exists for hosts where domain auth can't work, but it ships in the
+  bundle. See `.env.example`.
+- **Fallback: OpenStreetMap** standard tiles. Used automatically after 4 tile errors with
+  no successful load (e.g. Stadia 401 for an unregistered domain), with a console warning.
+  This is an emergency path only; the OSM tile policy doesn't allow relying on it.
+- History: the game launched on keyless CARTO Positron. CARTO started requiring a key and
+  watermarking keyless tiles "API KEY REQUIRED", which is what broke the map in 2026.
 
 ### Styling conventions
 
@@ -137,34 +152,30 @@ are in the roadmap.
   `'JetBrains Mono'`) and some hex colors inline. Prefer the `font-display` / `font-body` /
   `font-mono` tokens in new code. Match surrounding code when editing.
 - Leaflet z-index: overlays on the map use `z-[1000]`; the mobile bottom sheet uses
-  `z-[900]`. `.leaflet-container` has a CSS `filter`, which **creates a stacking context**:
-  everything inside the map (zoom controls, markers) sits below sibling overlays, and the
-  sepia filter also tints the pins.
-- Layout breakpoint is `lg` (1024 px): side panel on desktop, bottom sheet below that.
-  Both layouts are **mounted at once** and hidden with CSS.
+  `z-[900]`. `.leaflet-container` has `isolation: isolate`, so Leaflet's internal z-indexes
+  (panes 400, controls 1000) stay inside the map and below sibling overlays. The sepia
+  filter is on `.leaflet-tile-pane` only, so pins keep their true colours.
+- Layout breakpoint is 1024 px (`useMediaQuery("(min-width: 1024px)")` in `GameScreen`):
+  side panel on desktop, bottom sheet below that. **Only one layout is mounted.**
+- Components that reset per round (`Timer`, `ObjectPanel`, `RevealOverlay`) are **keyed by
+  round/object** in `GameScreen` instead of resetting state in effects. Keep that pattern;
+  the `react-hooks/set-state-in-effect` lint rule enforces it.
 
 ---
 
 ## Known issues (found during the Oct 2026 revival audit)
 
-Bugs:
-- `useGameState.submitTimeout` calls `saveGameState` directly instead of `persist`, so a
-  **timeout in practice mode overwrites today's saved daily game** (un-completing it).
-- **Two `<Timer>`s are mounted** (desktop and mobile, `GameScreen.tsx:63,94`), so
-  `onExpire` fires twice. Two `ObjectPanel`s are also mounted, each loading the image.
-- **Hint cost UI doesn't match scoring.** The button shows −150 / −300
-  (`ObjectPanel.tsx:178`), but `calculateScore` deducts 75 per hint.
+Fixed in Phase 0: the practice-timeout overwrite, the double Timer/ObjectPanel, the hint
+cost label, "Perfect" → "Curator", no error handling or fetch timeout in `initGame`, the
+dishonest "Copied!" fallback, and the wrong domain in the share text.
+
+Still open:
 - **Reloading mid-round resets the timer to 30 s** and drops the pending pin.
-- `initGame` has no error handling. If the seed JSON fetch fails or the Met API hangs (no
-  fetch timeout), the user sees "Loading objects…" forever. A Met failure is saved as
-  `metData: null` for the whole day with no retry.
-- The reveal label for `curator` says "Perfect" (`RevealOverlay.tsx:25`), but it's awarded
-  anywhere ≤ 400 km.
-- Share fallback shows "Copied!" even when the clipboard write failed.
+- A Met failure is saved as `metData: null` for the whole day, with no retry.
 - Practice ("Play again") replays the **same** 10 objects as the daily game.
 
 Mobile (details and a fix plan are in the roadmap):
-- The mobile timer bar (`absolute top-0 z-[1000]`) covers Leaflet's top-left zoom control.
+- The mobile timer bar (`absolute top-0 z-[1000]`) covers Leaflet's top-left zoom "+".
 - The bottom sheet opens at 75 dvh, which leaves about a quarter of the map tappable. It
   doesn't collapse when you interact with the map and can't be dragged.
 - The Confirm button and reveal card (`bottom-6`) overlap the bottom sheet. There's no
@@ -186,10 +197,6 @@ Data and pipeline:
 - Re-running `geocode-and-finalize.ts` reproduces the committed seed file byte-for-byte.
   Keep it that way: the pipeline should be the only writer of `seed-objects.json`.
 
-Tooling:
-- `npm run lint` reports 7 errors and 4 warnings (`react-hooks/set-state-in-effect` in
-  Timer/ObjectPanel/RevealOverlay, unused functions in the geocode script, missing
-  `persist` deps). `npm run build` passes.
 
 ### Docs drift (GDD vs code)
 
@@ -204,8 +211,9 @@ The GDD's scoring table (≤ 50 km perfect, 5000 km cutoff), medals (🌍 Contin
 - Keep `src/lib/*` pure and framework-free; put React state in `useGameState`.
 - Any change to selection, the seed list, or scoring changes the game for everyone. Call
   it out in the PR and say whether it needs a cutover date.
+- Run `npm run lint && npm test && npm run build` before pushing; CI runs the same.
 - After UI changes, check at least 375×667 (iPhone SE), 390×844 (iPhone 13/14), 844×390
   (phone landscape) and ≥1024 desktop. Playwright + Chromium is available in cloud sessions
-  for screenshot checks. External APIs (Met, CARTO) may be blocked by the sandbox network
-  policy, so stub them when testing there.
+  for screenshot checks. External hosts (Met API, Stadia, OSM) may be blocked by the sandbox
+  network policy, so stub them with `context.route()` when testing there.
 - Never hand-edit `seed-objects.json`; change the pipeline and regenerate.
