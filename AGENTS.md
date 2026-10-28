@@ -57,7 +57,8 @@ src/
   hooks/useMediaQuery.ts   Live CSS media query (picks side-panel vs mobile layout)
   lib/
     daily-selection.ts     Date → 10 seeds (seeded PRNG + Fisher–Yates). Determinism lives here.
-    scoring.ts             Haversine distance, score curve, hint penalty, medals, day number (epoch 2026-03-01)
+    scoring.ts             Distance, v1 + v2 score curves, medals, scoring zones, version-by-date, day number
+    region-scale.ts        Pipeline-only: per-answer scoring scale from neighbouring country centres
     round.ts               ROUND_SECONDS and resolveRound(): turn a guess (or none) into a scored round
     met-api.ts             Fetch Met objects (batches of 5, retry on 429, 8 s timeout)
     map-tiles.ts           Tile provider config (Stadia styles, OSM fallback), env-driven
@@ -74,12 +75,12 @@ src/
     Timer.tsx              Countdown bar derived from the round's startedAt (survives reloads and background tabs)
     ResultsScreen.tsx      Totals, per-object cards, overview map (touch-gated), share sheet/clipboard, countdown
   index.css                Tailwind @theme tokens (colors/fonts), keyframes, Leaflet sepia filter
-public/data/seed-objects.json   283 objects: { objectID, lat, lng, difficulty, notes }
+public/data/seed-objects.json   283 objects: { objectID, lat, lng, difficulty, notes, scaleKm }
 e2e/                       Playwright layout/behaviour tests (playwright.config.ts lists the device sizes)
 scripts/
   curate-seed-list.ts      MetObjects.csv → candidates.json (public domain + highlight + has country)
-  geocode-and-finalize.ts  Static lookup tables CITY_COORDS (l.43) / REGION_COORDS (l.268) / COUNTRY_COORDS (l.328),
-                           difficulty heuristic, per-country caps (l.820) → seed-objects.json
+  geocode-and-finalize.ts  Static lookup tables CITY_COORDS / REGION_COORDS / COUNTRY_COORDS, difficulty heuristic,
+                           per-country caps, scaleKm (+ SCALE_OVERRIDES) → seed-objects.json
   candidates.json          706 candidates (committed)
   candidates-filtered.csv  Raw CSV rows for those candidates (committed, for reference)
 docs/  GDD.md (game design), DESIGN.md (visual system — still authoritative), PLAN.md (original build plan)
@@ -118,18 +119,32 @@ docs/  GDD.md (game design), DESIGN.md (visual system — still authoritative), 
   version field; add one before making breaking changes to `GameState`.
 - **Practice mode** must never write to storage. All writes go through `persist()` in
   `useGameState`, which checks `practiceModeRef`. Never call `saveGameState` directly.
+- **Scoring rules are chosen by game date** (`scoringVersionFor(state.date)`), never by
+  deploy, so everyone playing the same day is scored the same way. v2 starts at
+  `SCORING_V2_START` (2026-11-01). Changing the curve again means adding a v3 with its own
+  start date and keeping v1/v2 intact.
 - **Answers are public** (they're in the static JSON). Accepted for v1; it matters only if
   leaderboards are added.
 
-### Scoring (as implemented, `src/lib/scoring.ts`)
+### Scoring (`src/lib/scoring.ts`)
 
-- ≤ 400 km → 1000. Then `1000·(1−t)^6` with `t = (d−400)/3600`, reaching 0 at 4000 km.
-  Roughly: 600 km ≈ 710, 900 km ≈ 408, 1500 km ≈ 112, 2000 km ≈ 29.
-- Hint penalty: **`HINT_PENALTY` (75) per hint used**, floored at 0. The hint buttons read
-  the same constant.
-- Medals: `curator` ≤ 400 km, `close` ≤ 1500 km, `distant` otherwise, `lost` if timed out or
-  score 0. Emoji in `share.ts`.
-- The curve is the same everywhere in the world. Region-aware scoring is a roadmap item.
+Entry point: `scoreGuess(distanceKm, hintsUsed, seed, version)`, called from
+`resolveRound()`. `scoringZones(seed, version)` gives the radii drawn at the reveal.
+
+- **v2 (game dates ≥ 2026-11-01): region-scaled.** Each seed has `scaleKm` (700–2200),
+  which is tight where countries are packed together (Europe) and loose where they're
+  sparse (East Asia, the Americas, Oceania). With `x = distance / scaleKm`: full points for
+  x ≤ 0.25, then `1000·(1 − (x−0.25)/2.75)³`, zero at x ≥ 3. Medals: `curator` x ≤ 0.25,
+  `close` x ≤ 1, else `distant`. A 1000 km miss scores 187 near Paris, 534 near Isfahan
+  and 793 near Beijing. The tuning table is in `docs/ROADMAP.md` (Phase 3). Seeds without
+  `scaleKm` fall back to `DEFAULT_SCALE_KM` (1600).
+- **v1 (earlier dates): one curve everywhere.** ≤ 400 km → 1000, then `1000·(1−t)^6` with
+  `t = (d−400)/3600`, 0 at 4000 km. Medals: `curator` ≤ 400 km, `close` ≤ 1500 km.
+- Both: hint penalty **`HINT_PENALTY` (75) per hint**, floored at 0; `lost` if timed out
+  or score 0. Emoji in `share.ts`.
+- `scaleKm` is computed by `regionScaleKm()` (`src/lib/region-scale.ts`) in the seed
+  pipeline, from country centres in the `world-countries` dev dependency (ODbL, used
+  offline only). Override odd cases in `SCALE_OVERRIDES` in the pipeline and regenerate.
 
 ### Hints (`ObjectPanel.getHints`)
 

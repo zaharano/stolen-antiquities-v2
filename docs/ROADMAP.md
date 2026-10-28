@@ -128,54 +128,54 @@ Remaining:
 
 **Problem.** One global curve: full points within 400 km, near zero by 2000 km. In Europe,
 400 km spans several countries (Paris → Brussels is ~260 km, a full-points "win" in the
-wrong country). In China, India or the Pacific, a 900 km miss is a decent guess but scores
+wrong country). In China, India or the Pacific, a 900 km miss is a decent guess but scored
 ~408.
 
-**Proposal: a per-object scale `s` (km), with the existing curve shape normalized to it.**
+Done (game dates from `SCORING_V2_START`, **2026-11-01**; earlier dates keep v1, so all
+players on one day share the same rules):
+- [x] **Per-object scale `scaleKm`**, computed in the seed pipeline by
+      `src/lib/region-scale.ts`: `clamp(round50(1.7 × mean distance to the 5 nearest other
+      UN-member country centres), 700, 2200)`. The nearest centre is skipped as "probably
+      the answer's own country". Centres come from the `world-countries` dev dependency
+      (ODbL); only the derived numbers ship. `SCALE_OVERRIDES` in the pipeline allows
+      hand-tuning per object.
+- [x] **Curve**, with x = distance / scaleKm: full points for x ≤ 0.25, then
+      `1000·(1 − (x−0.25)/2.75)³`, reaching 0 at x = 3.
+- [x] **Medals follow the scale**: `curator` x ≤ 0.25, `close` x ≤ 1, `distant` beyond.
+- [x] **Legible on the reveal**: a gold disc (full points) and a dashed ring ("close")
+      around the answer, and the card says "Full points within N km for this object".
+- [x] Regenerating the seed list only *added* `scaleKm`; order and contents are
+      unchanged, so daily selection is unaffected (the golden test pins it).
 
-```
-x = distance / s
-score = 1000                         if x ≤ 0.25
-      = 1000 · (1 − (x−0.25)/2.25)^p  if x ≤ 2.5     (p ≈ 4, softer than today's 6)
-      = 0                            otherwise
-```
+Where it landed (scale medians by region: Europe 700, Middle East/North Africa 1300,
+sub-Saharan Africa 1100, South/East Asia 2175 → capped at 2200, Americas and Oceania 2200):
 
-With `s = 1600, p = 6`, this reproduces today's curve exactly, so it's a safe superset.
+| Points for a miss of… | scale | full ≤ | 250 km | 500 km | 1000 km | 2000 km |
+|---|---|---|---|---|---|---|
+| v1 (everywhere) | — | 400 | 1000 | 844 | 335 | 29 |
+| Paris, Rome | 700 | 175 | 888 | 574 | 187 | 0 |
+| Court of Benin | 1050 | 265 | 1000 | 773 | 413 | 63 |
+| Isfahan, Mesoamerica | 1300 | 325 | 1000 | 860 | 534 | 150 |
+| Thebes (Luxor) | 1550 | 390 | 1000 | 923 | 628 | 240 |
+| Beijing, Kyoto, Java, Peru | 2200 | 550 | 1000 | 1000 | 793 | 440 |
 
-**How to choose `s`.** Make it reflect how *crowded with plausible alternatives* the
-neighbourhood is, not how big the country is:
+Known trade-offs:
+- The centroid heuristic can't tell a sea from a border: Japan gets the same loose scale
+  as China, so guessing Korea for a Japanese object still scores well. Use
+  `SCALE_OVERRIDES` for cases like that.
+- Europe is now noticeably harder, and it's ~45% of today's pool, so average daily
+  scores will drop until Phase 4 rebalances the pool.
 
-- ❌ *sqrt(country area)* is tempting but wrong. It makes Japan and the Solomon Islands as
-  harsh as Germany, even though nothing else plausible is nearby. (Tested: it gives Japan
-  and Solomon Islands 284 points at 600 km, the same as Germany.)
-- ✅ **Neighbour-density radius**, computed offline in the pipeline: `s = clamp(k · mean
-  distance from the answer to the 3 nearest *other-country* centroids, 600, 2600)`.
-  Europe lands around 600–800, East Asia and the Pacific 1800–2600, the Americas and MENA
-  in between. Store `scaleKm` in each seed entry so the runtime stays trivial and it can be
-  hand-overridden per object.
-- Ship a script that prints, for every seed, the points at 250/500/1000/2000 km misses, so
-  tuning happens by reading a table instead of playing 50 games.
-
-**Make it legible to players.** On reveal, draw a faint circle at the full-points radius
-(`0.25·s`) and another at the "close" radius around the answer. Players then *see* that
-the target zone in Asia is bigger, and the scoring feels fair, not arbitrary.
-
-**Optional layer: a right-country bonus.** Lazy-load Natural Earth 110 m admin-0
-(`world-atlas/countries-110m.json`, ~100 KB TopoJSON) and run point-in-polygon on the
-guess. If the guess lands in the same modern country as the answer, set a score floor
-(e.g. 600) and show "Right country". The caveat is that ancient cultures don't map to
-modern borders (Mesopotamia ≈ Iraq + Syria + Turkey), so allow `acceptCountries: [...]` per
-seed.
-
-**Medals** should follow the scale too: `curator` x ≤ 0.25, `close` x ≤ 1.0 (or right
-country), `distant` > 1.0. Fix the "Perfect" label.
-
-**Hints.** Pick one number and use it in the UI and the scoring. Consider a *percentage*
-penalty (−15% per hint) so hints cost the same relative amount at any distance.
-
-**Compatibility.** Scores in history were computed with v1, which is fine: they're stored
-as numbers. Mention "new scoring" in the release note so day-over-day comparisons aren't
-confusing.
+Remaining / ideas:
+- [ ] Playtest, then tune `SCALE_FACTOR`, the 700/2200 bounds, and the cubic tail.
+- [ ] Optional **right-country bonus**: lazy-load Natural Earth 110 m admin-0 and run
+      point-in-polygon on the guess; landing in the answer's modern country sets a score
+      floor (e.g. 600). Ancient cultures cross modern borders, so allow
+      `acceptCountries: [...]` per seed.
+- [ ] Hints: consider a percentage penalty (−15% per hint) instead of a flat −75, so
+      hints cost the same relative amount everywhere.
+- [ ] Release note: "new scoring from #245", so day-over-day comparisons aren't confusing
+      (history stores plain numbers, so nothing breaks).
 
 ## Phase 4: Daily selection v2 and seed list v2
 
