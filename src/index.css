@@ -51,9 +51,17 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 100dvh;
 }
 
-/* Leaflet map — sepia/warm filter to match paper-map aesthetic */
-.leaflet-container {
+/* Leaflet map — sepia/warm filter on the tiles only, so pins, lines and
+   controls keep their true colours (see docs/DESIGN.md) */
+.leaflet-tile-pane {
   filter: sepia(0.3) saturate(0.85) brightness(1.02);
+}
+
+/* Contain Leaflet's internal z-indexes (panes 400, controls 1000) so they
+   can't rise above app overlays such as the mobile bottom sheet */
+.leaflet-container {
+  isolation: isolate;
+  background-color: #EBE4D6;
 }
 
 /* Custom animation keyframes */

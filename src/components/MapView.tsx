@@ -1,10 +1,7 @@
 import { useEffect, useRef } from "react"
-import { MapContainer, TileLayer, Marker, Polyline, useMapEvents, useMap } from "react-leaflet"
+import { MapContainer, Marker, Polyline, useMapEvents, useMap } from "react-leaflet"
 import L from "leaflet"
-
-// Fix Leaflet default icon issue with Vite
-delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl
-L.Icon.Default.mergeOptions({ iconRetinaUrl: "", iconUrl: "", shadowUrl: "" })
+import { BaseTileLayer } from "./BaseTileLayer"
 
 // Red pushpin SVG for player guess
 const playerIcon = L.divIcon({
@@ -110,12 +107,7 @@ export function MapView({
       zoomControl={true}
       attributionControl={true}
     >
-      <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        subdomains="abcd"
-        maxZoom={19}
-      />
+      <BaseTileLayer />
 
       <ClickHandler onPinPlace={onPinPlace} interactive={interactive} />
       <ViewResetter roundKey={roundKey} />

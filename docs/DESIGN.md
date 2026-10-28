@@ -46,13 +46,13 @@ All fonts loaded via Google Fonts. Keep the load to 2-3 families max.
 
 ### Map
 
-- Tile style: Use a sepia/muted tile set. CartoDB Positron as the base, with a CSS filter applied to the map container to warm and desaturate it:
+- Tile style: Use a sepia/muted tile set. Stadia Alidade Smooth is the base (it replaced CartoDB Positron, which now needs an API key; see `src/lib/map-tiles.ts`), with a CSS filter applied to the tile pane to warm and desaturate it:
   ```css
-  .leaflet-container {
+  .leaflet-tile-pane {
     filter: sepia(0.3) saturate(0.85) brightness(1.02);
   }
   ```
-  This shifts the cool grey Positron tiles toward a warm, paper-map feel.
+  This shifts the cool grey tiles toward a warm, paper-map feel. The filter is on the tile pane only, not the whole map container, so pins and lines keep their true accent colours.
 
 ### Accent — vibrant red (the one pop of color)
 
