@@ -34,3 +34,6 @@ MetObjects.csv
 deploy.sh
 
 MetObjects.csv
+# Playwright
+test-results/
+playwright-report/
