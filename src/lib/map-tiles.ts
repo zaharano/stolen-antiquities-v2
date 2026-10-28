@@ -11,14 +11,17 @@ export interface TileProvider {
   maxZoom: number
 }
 
-const OSM_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-const STADIA_ATTRIBUTION =
-  '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> ' +
-  OSM_ATTRIBUTION
-const STAMEN_ATTRIBUTION =
-  '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://stamen.com/">Stamen Design</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> ' +
-  OSM_ATTRIBUTION
+// Credit links open in a new tab so a stray tap on the map doesn't leave the game
+const link = (href: string, text: string) =>
+  `<a href="${href}" target="_blank" rel="noopener">${text}</a>`
+
+const OSM_ATTRIBUTION = `&copy; ${link("https://www.openstreetmap.org/copyright", "OpenStreetMap")} contributors`
+const STADIA = `&copy; ${link("https://stadiamaps.com/", "Stadia Maps")}`
+const OPENMAPTILES = `&copy; ${link("https://openmaptiles.org/", "OpenMapTiles")}`
+const STAMEN = `&copy; ${link("https://stamen.com/", "Stamen Design")}`
+
+const STADIA_ATTRIBUTION = `${STADIA} ${OPENMAPTILES} ${OSM_ATTRIBUTION}`
+const STAMEN_ATTRIBUTION = `${STADIA} ${STAMEN} ${OPENMAPTILES} ${OSM_ATTRIBUTION}`
 
 /** Stadia styles that suit the paper-map look. Pick one with VITE_MAP_STYLE. */
 export const MAP_STYLES = {

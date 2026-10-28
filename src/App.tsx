@@ -11,6 +11,7 @@ function App() {
     practiceMode,
     loadError,
     initGame,
+    placePin,
     submitGuess,
     submitTimeout,
     revealHint,
@@ -94,6 +95,7 @@ function App() {
       <GameScreen
         gameState={gameState}
         appPhase={appPhase}
+        onPlacePin={placePin}
         onSubmitGuess={submitGuess}
         onSubmitTimeout={submitTimeout}
         onRevealHint={revealHint}

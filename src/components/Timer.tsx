@@ -2,72 +2,53 @@ import { useEffect, useRef, useState } from "react"
 
 interface TimerProps {
   seconds: number
+  /** Epoch ms the round started. Remaining time is derived from this, so a
+   *  reload or a backgrounded tab picks up where the clock really is.
+   *  Falls back to mount time (older saved games don't have it). */
+  startedAt?: number
   onExpire: () => void
   running: boolean
 }
 
-export function Timer({ seconds, onExpire, running }: TimerProps) {
-  const [remaining, setRemaining] = useState(seconds)
-  const startTimeRef = useRef<number | null>(null)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+export function Timer({ seconds, startedAt: startedAtProp, onExpire, running }: TimerProps) {
+  const [mountedAt] = useState(() => Date.now())
+  const startedAt = startedAtProp ?? mountedAt
+  const [now, setNow] = useState(mountedAt)
   const expiredRef = useRef(false)
+  const onExpireRef = useRef(onExpire)
 
-  // Start counting when running becomes true. The parent keys this component
-  // by round, so each round mounts a fresh Timer with full time remaining.
   useEffect(() => {
-    if (running) {
-      startTimeRef.current = Date.now()
+    onExpireRef.current = onExpire
+  })
 
-      intervalRef.current = setInterval(() => {
-        if (!startTimeRef.current) return
-        const elapsed = (Date.now() - startTimeRef.current) / 1000
-        const left = Math.max(0, seconds - elapsed)
-        setRemaining(left)
-
-        if (left <= 0 && !expiredRef.current) {
-          expiredRef.current = true
-          if (intervalRef.current) clearInterval(intervalRef.current)
-          onExpire()
-        }
-      }, 100)
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
-    }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running])
-
-  // Handle tab backgrounding: when the tab becomes visible again, check if
-  // time has already elapsed (browsers throttle setInterval in background tabs)
+  // Tick while running. The parent keys this component by round, so each
+  // round mounts a fresh Timer (and a fresh expiredRef).
   useEffect(() => {
     if (!running) return
 
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible" && startTimeRef.current && !expiredRef.current) {
-        const elapsed = (Date.now() - startTimeRef.current) / 1000
-        if (elapsed >= seconds) {
-          expiredRef.current = true
-          if (intervalRef.current) clearInterval(intervalRef.current)
-          setRemaining(0)
-          onExpire()
-        }
+    const tick = () => {
+      const t = Date.now()
+      setNow(t)
+      if (!expiredRef.current && (t - startedAt) / 1000 >= seconds) {
+        expiredRef.current = true
+        onExpireRef.current()
       }
     }
 
-    document.addEventListener("visibilitychange", handleVisibilityChange)
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running])
+    // Browsers throttle intervals in background tabs; re-check on return
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") tick()
+    }
 
+    const interval = setInterval(tick, 100)
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  }, [running, startedAt, seconds])
+
+  const remaining = Math.min(seconds, Math.max(0, seconds - (now - startedAt) / 1000))
   const displaySeconds = Math.ceil(remaining)
   const fraction = remaining / seconds
 

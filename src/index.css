@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Short screens: phones in landscape */
+@custom-variant short (@media (max-height: 500px));
+
 @theme {
   /* Base tones */
   --color-cream: #F5F0E8;
@@ -40,6 +43,7 @@ body {
   background-color: #F5F0E8;
   color: #2C2416;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
   -moz-osx-font-smoothing: grayscale;
 }
 
@@ -105,6 +109,12 @@ h1, h2, h3, h4, h5, h6 {
   animation: drawLine 700ms ease-in-out forwards;
   stroke-dasharray: 6, 4;
   stroke-dashoffset: 1000;
+}
+
+/* Compact tile credits: one line on most phones, two at most */
+.leaflet-container .leaflet-control-attribution {
+  font-size: 10px;
+  line-height: 1.4;
 }
 
 /* Shimmer placeholder */

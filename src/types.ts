@@ -35,6 +35,10 @@ export interface GameRound {
   medal: Medal | null
   hintsUsed: number
   timedOut: boolean
+  /** Epoch ms when this round's timer started; lets a reload resume the countdown */
+  startedAt?: number
+  /** Pin placed but not yet confirmed; submitted automatically if time runs out */
+  pendingGuess?: [number, number] | null
 }
 
 export interface GameState {

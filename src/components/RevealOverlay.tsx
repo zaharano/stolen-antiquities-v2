@@ -97,10 +97,10 @@ export function RevealOverlay({
     if (!pendingPin) return null
 
     return (
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] pointer-events-auto">
+      <div className="absolute inset-x-0 bottom-9 z-[500] flex justify-center px-4 pointer-events-none">
         <button
           onClick={onConfirm}
-          className="px-8 py-3 bg-ink text-cream rounded shadow-lg text-sm tracking-wide transition-transform hover:-translate-y-px hover:shadow-xl active:translate-y-0"
+          className="pointer-events-auto min-h-12 px-10 py-3 bg-ink text-cream rounded shadow-lg text-base tracking-wide transition-transform hover:-translate-y-px hover:shadow-xl active:translate-y-0"
           style={{ fontFamily: "'Source Serif 4', serif" }}
         >
           Confirm Placement
@@ -112,9 +112,9 @@ export function RevealOverlay({
   // Reveal phase
   return (
     <div
-      className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] pointer-events-auto w-[min(360px,calc(100vw-2rem))] animate-[fadeIn_200ms_ease-out]"
+      className="absolute inset-x-3 bottom-9 z-[500] sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[360px] animate-[fadeIn_200ms_ease-out]"
     >
-      <div className="bg-parchment border border-sepia rounded shadow-xl px-5 py-4">
+      <div className="bg-parchment border border-sepia rounded shadow-xl px-5 py-4 short:py-2">
         {/* Timed out notice */}
         {round.timedOut && (
           <p
@@ -127,7 +127,7 @@ export function RevealOverlay({
 
         {/* Medal + label — pop in with scale animation */}
         {round.medal && (
-          <div className="flex items-center justify-center gap-2 mb-3">
+          <div className="flex items-center justify-center gap-2 mb-3 short:mb-1">
             <span
               className="text-2xl"
               style={{
@@ -153,7 +153,7 @@ export function RevealOverlay({
         )}
 
         {/* Stats row */}
-        <div className="flex items-center justify-around border-t border-b border-sepia py-3 mb-4">
+        <div className="flex items-center justify-around border-t border-b border-sepia py-3 mb-4 short:py-1 short:mb-2">
           {/* Distance — simple fade */}
           <div
             className="text-center"
@@ -211,7 +211,8 @@ export function RevealOverlay({
         >
           <button
             onClick={onNext}
-            className="w-full py-2.5 bg-ink text-cream rounded text-sm tracking-wide transition-transform hover:-translate-y-px hover:shadow-md active:translate-y-0"
+            disabled={!nextVisible}
+            className="w-full min-h-11 py-2.5 bg-ink text-cream rounded text-base tracking-wide transition-transform hover:-translate-y-px hover:shadow-md active:translate-y-0"
             style={{ fontFamily: "'Source Serif 4', serif" }}
           >
             {isLastRound ? "See Results →" : "Next Object →"}

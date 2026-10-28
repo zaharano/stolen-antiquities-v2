@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from "react"
 import type { GameState, GameRound, SeedObject } from "../types"
 import { getDailyObjects } from "../lib/daily-selection"
 import { prefetchDailyObjects } from "../lib/met-api"
-import { calculateDistance, calculateScore, getMedal } from "../lib/scoring"
+import { resolveRound } from "../lib/round"
 import { saveGameState, loadGameState, getTodayDateString, appendGameToHistory } from "../lib/storage"
 
 export type AppPhase = "splash" | "playing" | "reveal" | "results"
@@ -14,12 +14,21 @@ export interface UseGameStateReturn {
   /** Set when starting a game failed (seed list or network error); cleared on retry */
   loadError: string | null
   initGame: (opts?: { practice?: boolean }) => Promise<void>
-  submitGuess: (lat: number, lng: number) => void
+  /** Place or move the unconfirmed pin for the current round */
+  placePin: (lat: number, lng: number) => void
+  /** Confirm the current round's pending pin */
+  submitGuess: () => void
   submitTimeout: () => void
   revealHint: (hintIndex: number) => void
   nextRound: () => void
   goToResults: () => void
   resetToSplash: () => void
+}
+
+function withCurrentRound(state: GameState, update: (round: GameRound) => GameRound): GameState {
+  const rounds = [...state.rounds]
+  rounds[state.currentRound] = update(rounds[state.currentRound])
+  return { ...state, rounds }
 }
 
 export function useGameState(): UseGameStateReturn {
@@ -29,10 +38,23 @@ export function useGameState(): UseGameStateReturn {
   const [loadError, setLoadError] = useState<string | null>(null)
   const practiceModeRef = useRef(false)
   const loadingRef = useRef(false)
+  // Latest state, so actions fired from timers never act on a stale snapshot
+  // (e.g. a timeout must see the pin placed after the round started)
+  const stateRef = useRef<GameState | null>(null)
 
   const persist = useCallback((state: GameState) => {
     if (!practiceModeRef.current) saveGameState(state)
   }, [])
+
+  /** Make `state` current: remember it, save it (unless practising), render it */
+  const commit = useCallback(
+    (state: GameState | null) => {
+      stateRef.current = state
+      if (state) persist(state)
+      setGameState(state)
+    },
+    [persist]
+  )
 
   const initGame = useCallback(async (opts?: { practice?: boolean }) => {
     // Ignore repeat taps on Begin while a game is already loading
@@ -48,18 +70,23 @@ export function useGameState(): UseGameStateReturn {
     if (!isPractice) {
       const existing = loadGameState(dateString)
       if (existing) {
-        setGameState(existing)
         if (existing.completed) {
+          commit(existing)
           setAppPhase("results")
+        } else if (existing.phase === "reveal") {
+          commit(existing)
+          setAppPhase("reveal")
         } else {
-          setAppPhase(existing.phase === "reveal" ? "reveal" : "playing")
+          // Games saved before startedAt existed restart the clock on resume
+          commit(withCurrentRound(existing, (r) => ({ ...r, startedAt: r.startedAt ?? Date.now() })))
+          setAppPhase("playing")
         }
         return
       }
     }
 
     // Show the loading screen while the seed list and Met objects are fetched
-    setGameState(null)
+    commit(null)
     setAppPhase("playing")
     loadingRef.current = true
 
@@ -97,142 +124,103 @@ export function useGameState(): UseGameStateReturn {
       hintsUsed: 0,
       timedOut: false,
     }))
+    rounds[0].startedAt = Date.now()
 
-    const newState: GameState = {
+    commit({
       date: dateString,
       rounds,
       currentRound: 0,
       phase: "playing",
       completed: false,
-    }
-
-    persist(newState)
-    setGameState(newState)
+    })
     setAppPhase("playing")
-  }, [persist])
+  }, [commit])
 
-  const submitGuess = useCallback(
+  const placePin = useCallback(
     (lat: number, lng: number) => {
-      if (!gameState) return
-      const round = gameState.rounds[gameState.currentRound]
-      if (!round) return
-
-      const { lat: correctLat, lng: correctLng } = round.seed
-      const distanceKm = calculateDistance(lat, lng, correctLat, correctLng)
-      const score = calculateScore(distanceKm, round.hintsUsed)
-      const medal = getMedal(distanceKm, score, false)
-
-      const updatedRound: GameRound = {
-        ...round,
-        playerGuess: [lat, lng],
-        distanceKm,
-        score,
-        medal,
-      }
-
-      const updatedRounds = [...gameState.rounds]
-      updatedRounds[gameState.currentRound] = updatedRound
-
-      const updatedState: GameState = {
-        ...gameState,
-        rounds: updatedRounds,
-        phase: "reveal",
-      }
-
-      persist(updatedState)
-      setGameState(updatedState)
-      setAppPhase("reveal")
+      const state = stateRef.current
+      if (!state || state.phase !== "playing") return
+      commit(withCurrentRound(state, (r) => ({ ...r, pendingGuess: [lat, lng] })))
     },
-    [gameState, persist]
+    [commit]
   )
 
+  const resolveCurrentRound = useCallback(
+    (guess: [number, number] | null) => {
+      const state = stateRef.current
+      if (!state || state.phase !== "playing") return
+      commit({
+        ...withCurrentRound(state, (r) => resolveRound(r, guess)),
+        phase: "reveal",
+      })
+      setAppPhase("reveal")
+    },
+    [commit]
+  )
+
+  const submitGuess = useCallback(() => {
+    const round = stateRef.current?.rounds[stateRef.current.currentRound]
+    if (round?.pendingGuess) resolveCurrentRound(round.pendingGuess)
+  }, [resolveCurrentRound])
+
+  // A pin left on the map when time runs out still counts
   const submitTimeout = useCallback(() => {
-    if (!gameState) return
-    const round = gameState.rounds[gameState.currentRound]
-    if (!round) return
-
-    const updatedRound: GameRound = {
-      ...round,
-      playerGuess: null,
-      distanceKm: null,
-      score: 0,
-      medal: "lost",
-      timedOut: true,
-    }
-
-    const updatedRounds = [...gameState.rounds]
-    updatedRounds[gameState.currentRound] = updatedRound
-
-    const updatedState: GameState = {
-      ...gameState,
-      rounds: updatedRounds,
-      phase: "reveal",
-    }
-
-    persist(updatedState)
-    setGameState(updatedState)
-    setAppPhase("reveal")
-  }, [gameState, persist])
+    const round = stateRef.current?.rounds[stateRef.current.currentRound]
+    resolveCurrentRound(round?.pendingGuess ?? null)
+  }, [resolveCurrentRound])
 
   const revealHint = useCallback(
     (hintIndex: number) => {
-      if (!gameState) return
-      const round = gameState.rounds[gameState.currentRound]
-      if (!round) return
+      const state = stateRef.current
+      if (!state) return
       // Only update if this hint is being revealed for the first time
       // hintsUsed tracks the count of hints revealed
-      if (hintIndex >= round.hintsUsed) {
-        const updatedRound: GameRound = {
-          ...round,
-          hintsUsed: hintIndex + 1,
-        }
-        const updatedRounds = [...gameState.rounds]
-        updatedRounds[gameState.currentRound] = updatedRound
-        const updatedState: GameState = { ...gameState, rounds: updatedRounds }
-        persist(updatedState)
-        setGameState(updatedState)
-      }
+      if (hintIndex < state.rounds[state.currentRound].hintsUsed) return
+      commit(withCurrentRound(state, (r) => ({ ...r, hintsUsed: hintIndex + 1 })))
     },
-    [gameState, persist]
+    [commit]
   )
 
   const nextRound = useCallback(() => {
-    if (!gameState) return
-    const nextIndex = gameState.currentRound + 1
+    const state = stateRef.current
+    if (!state) return
+    const nextIndex = state.currentRound + 1
 
-    if (nextIndex >= gameState.rounds.length) {
+    if (nextIndex >= state.rounds.length) {
       // All rounds done — go to results
       const updatedState: GameState = {
-        ...gameState,
+        ...state,
         phase: "results",
         completed: true,
       }
-      persist(updatedState)
+      commit(updatedState)
       if (!practiceModeRef.current) appendGameToHistory(updatedState)
-      setGameState(updatedState)
       setAppPhase("results")
     } else {
-      const updatedState: GameState = {
-        ...gameState,
-        currentRound: nextIndex,
-        phase: "playing",
-      }
-      persist(updatedState)
-      setGameState(updatedState)
+      commit(
+        withCurrentRound({ ...state, currentRound: nextIndex, phase: "playing" }, (r) => ({
+          ...r,
+          startedAt: Date.now(),
+        }))
+      )
       setAppPhase("playing")
     }
-  }, [gameState, persist])
+  }, [commit])
 
   const goToResults = useCallback(() => {
-    if (!gameState) {
+    if (!stateRef.current) {
       const saved = loadGameState(getTodayDateString())
-      if (saved) setGameState(saved)
+      if (saved) {
+        stateRef.current = saved
+        setGameState(saved)
+      }
     }
     setAppPhase("results")
-  }, [gameState])
+  }, [])
 
   const resetToSplash = useCallback(() => {
     setAppPhase("splash")
+    stateRef.current = null
     setGameState(null)
     setLoadError(null)
   }, [])
@@ -243,6 +231,7 @@ export function useGameState(): UseGameStateReturn {
     practiceMode,
     loadError,
     initGame,
+    placePin,
     submitGuess,
     submitTimeout,
     revealHint,

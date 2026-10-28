@@ -47,6 +47,24 @@ function BoundsFitter({ positions }: { positions: [number, number][] }) {
   return null
 }
 
+// ─── Map: touch gate ───────────────────────────────────────────────────────
+
+// On touch screens a one-finger drag on the map would pan it instead of
+// scrolling the page, trapping the player. The map starts locked there and a
+// tap unlocks it.
+const isCoarsePointer =
+  typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
+
+function TouchUnlock({ unlocked }: { unlocked: boolean }) {
+  const map = useMap()
+  useEffect(() => {
+    if (!unlocked) return
+    map.dragging.enable()
+    map.touchZoom.enable()
+  }, [map, unlocked])
+  return null
+}
+
 // ─── Countdown to midnight UTC ─────────────────────────────────────────────
 
 function useCountdown() {
@@ -198,6 +216,8 @@ function RoundCard({ round }: { round: GameRound }) {
 // ─── Overview map ──────────────────────────────────────────────────────────
 
 function OverviewMap({ rounds }: { rounds: GameRound[] }) {
+  const [unlocked, setUnlocked] = useState(!isCoarsePointer)
+
   // Collect all positions for bounds fitting
   const allPositions: [number, number][] = []
   rounds.forEach((r) => {
@@ -206,23 +226,44 @@ function OverviewMap({ rounds }: { rounds: GameRound[] }) {
   })
 
   return (
-    <MapContainer
-      center={[20, 0]}
-      zoom={2}
-      className="w-full rounded border border-sepia"
-      style={{ height: "300px" }}
-      scrollWheelZoom={false}
-      attributionControl={true}
-      zoomControl={true}
-    >
-      <BaseTileLayer />
+    <div className="relative">
+      <MapContainer
+        center={[20, 0]}
+        zoom={2}
+        zoomSnap={0.25}
+        className="w-full rounded border border-sepia"
+        style={{ height: "300px" }}
+        scrollWheelZoom={false}
+        dragging={unlocked}
+        touchZoom={unlocked}
+        attributionControl={true}
+        zoomControl={true}
+      >
+        <TouchUnlock unlocked={unlocked} />
+        <BaseTileLayer />
 
-      <BoundsFitter positions={allPositions} />
+        <BoundsFitter positions={allPositions} />
 
-      {rounds.map((round, i) => (
-        <MapMarkersForRound key={i} round={round} roundNumber={i + 1} />
-      ))}
-    </MapContainer>
+        {rounds.map((round, i) => (
+          <MapMarkersForRound key={i} round={round} roundNumber={i + 1} />
+        ))}
+      </MapContainer>
+      {!unlocked && (
+        <button
+          type="button"
+          onClick={() => setUnlocked(true)}
+          className="absolute inset-0 z-[500] flex items-end justify-center pb-4 rounded"
+          aria-label="Explore the map"
+        >
+          <span
+            className="bg-ink/75 text-cream text-sm px-3 py-1.5 rounded"
+            style={{ fontFamily: "'Source Serif 4', serif" }}
+          >
+            Tap to explore the map
+          </span>
+        </button>
+      )}
+    </div>
   )
 }
 
@@ -300,8 +341,19 @@ export function ResultsScreen({ gameState, onPlayAgain }: ResultsScreenProps) {
   )
 
   const shareText = generateShareText(gameState)
+  // Phones get the native share sheet; desktops copy to the clipboard
+  const canNativeShare = isCoarsePointer && typeof navigator.share === "function"
 
   async function handleShare() {
+    if (canNativeShare) {
+      try {
+        await navigator.share({ text: shareText })
+        return
+      } catch (err) {
+        // Dismissing the share sheet isn't an error; anything else falls back to copying
+        if (err instanceof DOMException && err.name === "AbortError") return
+      }
+    }
     try {
       await navigator.clipboard.writeText(shareText)
       setCopyStatus("copied")
@@ -326,7 +378,10 @@ export function ResultsScreen({ gameState, onPlayAgain }: ResultsScreenProps) {
   return (
     <div className="min-h-dvh bg-cream flex flex-col">
       {/* ── Header ── */}
-      <div className="border-b border-sepia bg-parchment px-4 py-5">
+      <div
+        className="border-b border-sepia bg-parchment px-4 py-5"
+        style={{ paddingTop: "max(1.25rem, env(safe-area-inset-top))" }}
+      >
         <div className="max-w-2xl mx-auto">
           {/* Title row */}
           <div className="flex items-baseline justify-between gap-2 flex-wrap">
@@ -428,9 +483,7 @@ export function ResultsScreen({ gameState, onPlayAgain }: ResultsScreenProps) {
             >
               Map Overview
             </h3>
-            <div className="md:h-96">
-              <OverviewMap rounds={gameState.rounds} />
-            </div>
+            <OverviewMap rounds={gameState.rounds} />
             <p
               className="text-xs text-sepia-dark mt-2"
               style={{ fontFamily: "'Source Serif 4', serif" }}
@@ -464,7 +517,7 @@ export function ResultsScreen({ gameState, onPlayAgain }: ResultsScreenProps) {
                   (e.currentTarget.style.backgroundColor = "#E63B2E")
                 }
               >
-                Copy to Clipboard
+                {canNativeShare ? "Share Results" : "Copy to Clipboard"}
               </button>
 
               {/* "Copied!" toast */}
@@ -511,7 +564,10 @@ export function ResultsScreen({ gameState, onPlayAgain }: ResultsScreenProps) {
           </section>
 
           {/* Footer */}
-          <section className="pb-8 text-center">
+          <section
+            className="text-center"
+            style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}
+          >
             <div
               className="inline-block border border-sepia rounded px-6 py-4 bg-parchment"
               style={{
@@ -541,7 +597,7 @@ export function ResultsScreen({ gameState, onPlayAgain }: ResultsScreenProps) {
             <div className="mt-6">
               <button
                 onClick={onPlayAgain}
-                className="text-ink-light text-sm underline underline-offset-2 hover:text-ink transition-colors"
+                className="min-h-11 px-4 text-ink-light text-sm underline underline-offset-2 hover:text-ink transition-colors"
                 style={{ fontFamily: "'Source Serif 4', serif" }}
               >
                 Back to start

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react"
-import { MapContainer, Marker, Polyline, useMapEvents, useMap } from "react-leaflet"
+import { AttributionControl, MapContainer, Marker, Polyline, useMapEvents, useMap } from "react-leaflet"
 import L from "leaflet"
 import { BaseTileLayer } from "./BaseTileLayer"
 
@@ -25,6 +25,16 @@ const correctIcon = L.divIcon({
   iconAnchor: [12, 36],
 })
 
+// Inhabited world, roughly: fits on any screen at the start of each round
+const WORLD_BOUNDS = L.latLngBounds([-50, -170], [72, 190])
+
+// Space kept clear at the bottom of the map for the reveal card
+const REVEAL_CARD_SPACE = 260
+
+// On touch screens a double-tap would also drop a pin; pinch zoom covers it
+const isCoarsePointer =
+  typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
+
 export interface MapViewProps {
   playerPin: [number, number] | null
   correctPin: [number, number] | null
@@ -32,6 +42,8 @@ export interface MapViewProps {
   showReveal: boolean
   interactive: boolean
   roundKey: number  // changes each round — triggers view reset
+  /** Called on any touch/click on the map (used to collapse the mobile sheet) */
+  onUserInteract?: () => void
 }
 
 // Inner component to handle map click events
@@ -51,14 +63,42 @@ function ClickHandler({
   return null
 }
 
-// Inner component to reset view to world level on each new round
+// Keep Leaflet in sync with its container, which resizes as the mobile sheet
+// opens and closes. pan: false keeps the top-left fixed, so whatever is under
+// the player's finger doesn't move while they tap.
+function SizeWatcher() {
+  const map = useMap()
+  useEffect(() => {
+    const observer = new ResizeObserver(() => map.invalidateSize({ pan: false }))
+    observer.observe(map.getContainer())
+    return () => observer.disconnect()
+  }, [map])
+  return null
+}
+
+function InteractionWatcher({ onUserInteract }: { onUserInteract?: () => void }) {
+  const map = useMap()
+  const callback = useRef(onUserInteract)
+  useEffect(() => {
+    callback.current = onUserInteract
+  })
+  useEffect(() => {
+    const container = map.getContainer()
+    const handler = () => callback.current?.()
+    container.addEventListener("pointerdown", handler)
+    return () => container.removeEventListener("pointerdown", handler)
+  }, [map])
+  return null
+}
+
+// Inner component to reset view to the whole world on each new round
 function ViewResetter({ roundKey }: { roundKey: number }) {
   const map = useMap()
   const prevRoundKey = useRef(roundKey)
 
   useEffect(() => {
     if (roundKey !== prevRoundKey.current) {
-      map.flyTo([20, 0], 2, { duration: 0.6 })
+      map.flyToBounds(WORLD_BOUNDS, { duration: 0.6 })
       prevRoundKey.current = roundKey
     }
   }, [roundKey, map])
@@ -80,9 +120,15 @@ function BoundsFitter({
   const prevShowReveal = useRef(false)
 
   useEffect(() => {
-    if (showReveal && !prevShowReveal.current && playerPin && correctPin) {
-      const bounds = L.latLngBounds([playerPin, correctPin])
-      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 8 })
+    if (showReveal && !prevShowReveal.current && correctPin) {
+      const bounds = L.latLngBounds(playerPin ? [playerPin, correctPin] : [correctPin])
+      // Keep both pins clear of the reveal card along the bottom
+      const bottom = Math.min(REVEAL_CARD_SPACE, map.getSize().y * 0.5)
+      map.fitBounds(bounds, {
+        paddingTopLeft: [40, 40],
+        paddingBottomRight: [40, bottom],
+        maxZoom: 6,
+      })
     }
     prevShowReveal.current = showReveal
   }, [showReveal, playerPin, correctPin, map])
@@ -97,18 +143,25 @@ export function MapView({
   showReveal,
   interactive,
   roundKey,
+  onUserInteract,
 }: MapViewProps) {
   return (
     <MapContainer
-      center={[20, 0]}
-      zoom={2}
+      bounds={WORLD_BOUNDS}
+      zoomSnap={0.25}
       className="w-full h-full"
       style={{ cursor: interactive ? "crosshair" : "default" }}
       zoomControl={true}
-      attributionControl={true}
+      attributionControl={false}
+      doubleClickZoom={!isCoarsePointer}
     >
+      {/* Bottom edge: rarely tapped (ocean, Antarctica), unlike the top of the map.
+          The Confirm button and reveal card sit just above it. */}
+      <AttributionControl position="bottomright" prefix={false} />
       <BaseTileLayer />
 
+      <SizeWatcher />
+      <InteractionWatcher onUserInteract={onUserInteract} />
       <ClickHandler onPinPlace={onPinPlace} interactive={interactive} />
       <ViewResetter roundKey={roundKey} />
 

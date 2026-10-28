@@ -71,29 +71,31 @@ export function SplashScreen({ onBegin, onPractice, onViewResults }: SplashScree
   }, [alreadyPlayed])
 
   return (
-    <div className="min-h-dvh bg-cream flex flex-col items-center justify-center px-6 py-12">
+    <div
+      className="min-h-dvh bg-cream flex flex-col items-center justify-center px-6 pt-[max(3rem,env(safe-area-inset-top))] pb-[max(3rem,env(safe-area-inset-bottom))] short:pt-[max(1.5rem,env(safe-area-inset-top))] short:pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+    >
       {/* Decorative rule */}
-      <div className="w-24 h-px bg-sepia mb-8" />
+      <div className="w-24 h-px bg-sepia mb-8 short:hidden" />
 
       <h1
-        className="text-ink text-5xl md:text-7xl text-center leading-tight"
+        className="text-ink text-5xl md:text-7xl short:text-4xl! text-center leading-tight"
         style={{ fontFamily: "'DM Serif Display', serif" }}
       >
-        Stolen
-        <br />
+        Stolen{" "}
+        <br className="short:hidden" />
         Antiquities
       </h1>
 
-      <div className="w-24 h-px bg-sepia mt-8 mb-6" />
+      <div className="w-24 h-px bg-sepia mt-8 mb-6 short:hidden" />
 
       <p
-        className="text-ink-light text-base md:text-lg text-center max-w-sm"
+        className="text-ink-light text-base md:text-lg text-center max-w-sm short:mt-3"
         style={{ fontFamily: "'Source Serif 4', serif" }}
       >
         Ten objects taken from their homelands. Ten chances to return them.
       </p>
 
-      <div className="mt-8 text-center">
+      <div className="mt-8 short:mt-4 text-center">
         <p
           className="text-ink text-lg font-medium"
           style={{ fontFamily: "'Source Serif 4', serif" }}
@@ -108,7 +110,7 @@ export function SplashScreen({ onBegin, onPractice, onViewResults }: SplashScree
         </p>
       </div>
 
-      <div className="mt-10">
+      <div className="mt-10 short:mt-5">
         {alreadyPlayed ? (
           <div className="flex flex-col items-center gap-4">
             <p
@@ -157,7 +159,7 @@ export function SplashScreen({ onBegin, onPractice, onViewResults }: SplashScree
       </div>
 
       {history.length > 0 && (
-        <div className="mt-12 w-full max-w-xs">
+        <div className="mt-12 short:mt-6 w-full max-w-xs">
           <h3
             className="text-ink text-sm text-center mb-3 border-b border-sepia pb-2"
             style={{ fontFamily: "'DM Serif Display', serif" }}
@@ -173,7 +175,7 @@ export function SplashScreen({ onBegin, onPractice, onViewResults }: SplashScree
       )}
 
       <p
-        className="mt-16 text-sepia-dark text-xs text-center"
+        className="mt-16 short:mt-6 text-sepia-dark text-xs text-center"
         style={{ fontFamily: "'Source Serif 4', serif" }}
       >
         Objects sourced from the Metropolitan Museum of Art Open Access collection.
