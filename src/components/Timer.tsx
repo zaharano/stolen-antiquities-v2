@@ -12,11 +12,10 @@ export function Timer({ seconds, onExpire, running }: TimerProps) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const expiredRef = useRef(false)
 
-  // Reset when running transitions from false to true (new round)
+  // Start counting when running becomes true. The parent keys this component
+  // by round, so each round mounts a fresh Timer with full time remaining.
   useEffect(() => {
     if (running) {
-      setRemaining(seconds)
-      expiredRef.current = false
       startTimeRef.current = Date.now()
 
       intervalRef.current = setInterval(() => {

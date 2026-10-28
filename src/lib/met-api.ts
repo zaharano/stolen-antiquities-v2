@@ -1,6 +1,7 @@
 import type { MetObject, SeedObject } from "../types"
 
 const BASE_URL = "https://collectionapi.metmuseum.org/public/collection/v1"
+const REQUEST_TIMEOUT_MS = 8000
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -8,7 +9,10 @@ function delay(ms: number): Promise<void> {
 
 async function fetchMetObjectWithRetry(objectID: number, retries = 2): Promise<MetObject> {
   for (let attempt = 0; attempt <= retries; attempt++) {
-    const response = await fetch(`${BASE_URL}/objects/${objectID}`)
+    // A hung request would otherwise block the whole game from starting
+    const response = await fetch(`${BASE_URL}/objects/${objectID}`, {
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    })
 
     if (response.status === 429) {
       if (attempt < retries) {

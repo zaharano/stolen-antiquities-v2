@@ -1,14 +1,15 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { useGameState } from "./hooks/useGameState"
 import { SplashScreen } from "./components/SplashScreen"
 import { GameScreen } from "./components/GameScreen"
 import { ResultsScreen } from "./components/ResultsScreen"
-import { loadGameState, getTodayDateString } from "./lib/storage"
 
 function App() {
   const {
     gameState,
     appPhase,
+    practiceMode,
+    loadError,
     initGame,
     submitGuess,
     submitTimeout,
@@ -17,20 +18,6 @@ function App() {
     goToResults,
     resetToSplash,
   } = useGameState()
-
-  // On mount: check localStorage for today's game
-  useEffect(() => {
-    const dateString = getTodayDateString()
-    const existing = loadGameState(dateString)
-    if (existing?.completed) {
-      // Will be handled by initGame, but we can also just show splash
-      // and let the splash screen surface the "already played" state.
-      // The useGameState.initGame() handles this on "Begin" click.
-    }
-    // If there's an in-progress game, we can auto-resume when they click Begin.
-    // No auto-start — always show splash first.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   // Shared fade-in style applied to every screen so transitions feel smooth
   const screenStyle: React.CSSProperties = {
@@ -67,6 +54,30 @@ function App() {
   }
 
   // playing | reveal
+  if (!gameState && loadError) {
+    return (
+      <div key="game-error" style={screenStyle} className="min-h-dvh bg-cream flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-ink max-w-xs" style={{ fontFamily: "'Source Serif 4', serif" }}>
+          {loadError}
+        </p>
+        <button
+          onClick={() => initGame({ practice: practiceMode })}
+          className="px-8 py-3 bg-ink text-cream rounded text-sm tracking-wide"
+          style={{ fontFamily: "'Source Serif 4', serif" }}
+        >
+          Try again
+        </button>
+        <button
+          onClick={resetToSplash}
+          className="text-ink-light text-sm underline underline-offset-2"
+          style={{ fontFamily: "'Source Serif 4', serif" }}
+        >
+          Back to start
+        </button>
+      </div>
+    )
+  }
+
   if (!gameState) {
     return (
       <div key="game-loading" style={screenStyle} className="min-h-dvh bg-cream flex flex-col items-center justify-center gap-4">

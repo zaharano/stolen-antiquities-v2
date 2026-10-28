@@ -2,6 +2,9 @@ import type { Medal } from "../types"
 
 const EARTH_RADIUS_KM = 6371
 
+/** Points deducted from an object's score for each hint revealed. */
+export const HINT_PENALTY = 75
+
 export function calculateDistance(
   lat1: number,
   lng1: number,
@@ -36,7 +39,7 @@ export function calculateScore(
       ? 1000
       : Math.max(0, Math.round(1000 * Math.pow(1 - t, 6)))
 
-  const penalized = baseScore - hintsUsed * 75
+  const penalized = baseScore - hintsUsed * HINT_PENALTY
   return Math.max(0, penalized)
 }
 

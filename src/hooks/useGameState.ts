@@ -11,6 +11,8 @@ export interface UseGameStateReturn {
   gameState: GameState | null
   appPhase: AppPhase
   practiceMode: boolean
+  /** Set when starting a game failed (seed list or network error); cleared on retry */
+  loadError: string | null
   initGame: (opts?: { practice?: boolean }) => Promise<void>
   submitGuess: (lat: number, lng: number) => void
   submitTimeout: () => void
@@ -24,16 +26,21 @@ export function useGameState(): UseGameStateReturn {
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [appPhase, setAppPhase] = useState<AppPhase>("splash")
   const [practiceMode, setPracticeMode] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const practiceModeRef = useRef(false)
+  const loadingRef = useRef(false)
 
   const persist = useCallback((state: GameState) => {
     if (!practiceModeRef.current) saveGameState(state)
   }, [])
 
   const initGame = useCallback(async (opts?: { practice?: boolean }) => {
+    // Ignore repeat taps on Begin while a game is already loading
+    if (loadingRef.current) return
     const isPractice = opts?.practice ?? false
     practiceModeRef.current = isPractice
     setPracticeMode(isPractice)
+    setLoadError(null)
 
     const dateString = getTodayDateString()
 
@@ -51,15 +58,33 @@ export function useGameState(): UseGameStateReturn {
       }
     }
 
-    // Fetch seed list
-    const response = await fetch("/data/seed-objects.json")
-    const seedList: SeedObject[] = await response.json()
+    // Show the loading screen while the seed list and Met objects are fetched
+    setGameState(null)
+    setAppPhase("playing")
+    loadingRef.current = true
 
-    // Get today's 10 objects
-    const dailySeeds = getDailyObjects(dateString, seedList)
+    let dailySeeds: SeedObject[]
+    let metObjects: Awaited<ReturnType<typeof prefetchDailyObjects>>
+    try {
+      // Fetch seed list
+      const response = await fetch("/data/seed-objects.json")
+      if (!response.ok) {
+        throw new Error(`Seed list request failed: ${response.status}`)
+      }
+      const seedList: SeedObject[] = await response.json()
 
-    // Prefetch all Met objects in parallel
-    const metObjects = await prefetchDailyObjects(dailySeeds)
+      // Get today's 10 objects
+      dailySeeds = getDailyObjects(dateString, seedList)
+
+      // Prefetch all Met objects in parallel (individual failures become null)
+      metObjects = await prefetchDailyObjects(dailySeeds)
+    } catch (err) {
+      console.error("Failed to start game", err)
+      setLoadError("We couldn't load today's objects. Check your connection and try again.")
+      return
+    } finally {
+      loadingRef.current = false
+    }
 
     // Build initial rounds
     const rounds: GameRound[] = dailySeeds.map((seed, i) => ({
@@ -118,7 +143,7 @@ export function useGameState(): UseGameStateReturn {
       setGameState(updatedState)
       setAppPhase("reveal")
     },
-    [gameState]
+    [gameState, persist]
   )
 
   const submitTimeout = useCallback(() => {
@@ -144,10 +169,10 @@ export function useGameState(): UseGameStateReturn {
       phase: "reveal",
     }
 
-    saveGameState(updatedState)
+    persist(updatedState)
     setGameState(updatedState)
     setAppPhase("reveal")
-  }, [gameState])
+  }, [gameState, persist])
 
   const revealHint = useCallback(
     (hintIndex: number) => {
@@ -168,7 +193,7 @@ export function useGameState(): UseGameStateReturn {
         setGameState(updatedState)
       }
     },
-    [gameState]
+    [gameState, persist]
   )
 
   const nextRound = useCallback(() => {
@@ -196,7 +221,7 @@ export function useGameState(): UseGameStateReturn {
       setGameState(updatedState)
       setAppPhase("playing")
     }
-  }, [gameState])
+  }, [gameState, persist])
 
   const goToResults = useCallback(() => {
     if (!gameState) {
@@ -209,12 +234,14 @@ export function useGameState(): UseGameStateReturn {
   const resetToSplash = useCallback(() => {
     setAppPhase("splash")
     setGameState(null)
+    setLoadError(null)
   }, [])
 
   return {
     gameState,
     appPhase,
     practiceMode,
+    loadError,
     initGame,
     submitGuess,
     submitTimeout,

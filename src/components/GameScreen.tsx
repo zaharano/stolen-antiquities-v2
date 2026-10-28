@@ -5,6 +5,7 @@ import { MapView } from "./MapView"
 import { Timer } from "./Timer"
 import { RevealOverlay } from "./RevealOverlay"
 import type { AppPhase } from "../hooks/useGameState"
+import { useMediaQuery } from "../hooks/useMediaQuery"
 
 interface GameScreenProps {
   gameState: GameState
@@ -25,6 +26,9 @@ export function GameScreen({
 }: GameScreenProps) {
   const [pendingPin, setPendingPin] = useState<[number, number] | null>(null)
   const [mobileExpanded, setMobileExpanded] = useState(true)
+  // Matches Tailwind's `lg` breakpoint. Only one layout is mounted so there is
+  // a single Timer (one onExpire) and a single ObjectPanel (one image load).
+  const isDesktop = useMediaQuery("(min-width: 1024px)")
 
   const currentRoundIndex = gameState.currentRound
   const round = gameState.rounds[currentRoundIndex]
@@ -54,29 +58,36 @@ export function GameScreen({
     ? (round.playerGuess ?? null)
     : pendingPin
 
+  // Keyed by round so the countdown starts fresh for each object
+  const timer = (
+    <Timer
+      key={currentRoundIndex}
+      seconds={30}
+      onExpire={onSubmitTimeout}
+      running={isPlaying}
+    />
+  )
+
   return (
     <div className="flex h-dvh w-full overflow-hidden">
       {/* ── Desktop: left panel ── */}
-      <div className="hidden lg:flex lg:flex-col lg:w-[360px] lg:shrink-0 border-r border-sepia">
-        {/* Timer sits at the top of the panel */}
-        <div className="border-b border-sepia">
-          <Timer
-            seconds={30}
-            onExpire={onSubmitTimeout}
-            running={isPlaying}
-          />
-        </div>
+      {isDesktop && (
+        <div className="flex flex-col w-[360px] shrink-0 border-r border-sepia">
+          {/* Timer sits at the top of the panel */}
+          <div className="border-b border-sepia">{timer}</div>
 
-        {/* Object panel fills remaining height */}
-        <div className="flex-1 overflow-hidden">
-          <ObjectPanel
-            round={round}
-            roundNumber={currentRoundIndex + 1}
-            onHintReveal={onRevealHint}
-            expanded={true}
-          />
+          {/* Object panel fills remaining height */}
+          <div className="flex-1 overflow-hidden">
+            <ObjectPanel
+              key={round.seed.objectID}
+              round={round}
+              roundNumber={currentRoundIndex + 1}
+              onHintReveal={onRevealHint}
+              expanded={true}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Map area ── */}
       <div className="relative flex-1">
@@ -90,16 +101,15 @@ export function GameScreen({
         />
 
         {/* ── Mobile: timer bar floated over map top ── */}
-        <div className="lg:hidden absolute top-0 left-0 right-0 z-[1000] bg-parchment/90 backdrop-blur-sm border-b border-sepia">
-          <Timer
-            seconds={30}
-            onExpire={onSubmitTimeout}
-            running={isPlaying}
-          />
-        </div>
+        {!isDesktop && (
+          <div className="absolute top-0 left-0 right-0 z-[1000] bg-parchment/90 backdrop-blur-sm border-b border-sepia">
+            {timer}
+          </div>
+        )}
 
-        {/* RevealOverlay / Confirm button */}
+        {/* RevealOverlay / Confirm button — keyed so reveal animations restart each round */}
         <RevealOverlay
+          key={`${currentRoundIndex}-${isReveal ? "reveal" : "playing"}`}
           round={round}
           roundNumber={currentRoundIndex + 1}
           totalRounds={gameState.rounds.length}
@@ -111,43 +121,46 @@ export function GameScreen({
       </div>
 
       {/* ── Mobile: bottom sheet ── */}
-      <div
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-[900] overflow-hidden bg-parchment border-t border-sepia shadow-2xl"
-        style={{
-          height: mobileExpanded ? "75dvh" : "96px",
-          transition: "height 200ms ease-out",
-        }}
-      >
-        {/* Drag handle — visible pill */}
+      {!isDesktop && (
         <div
-          className="flex justify-center items-center pt-3 pb-2 cursor-pointer select-none"
-          onClick={() => setMobileExpanded((v) => !v)}
-          role="button"
-          aria-label={mobileExpanded ? "Collapse object panel" : "Expand object panel"}
+          className="fixed bottom-0 left-0 right-0 z-[900] overflow-hidden bg-parchment border-t border-sepia shadow-2xl"
+          style={{
+            height: mobileExpanded ? "75dvh" : "96px",
+            transition: "height 200ms ease-out",
+          }}
         >
+          {/* Drag handle — visible pill */}
           <div
-            style={{
-              width: "40px",
-              height: "4px",
-              backgroundColor: "#D4C5A9",
-              borderRadius: "9999px",
-            }}
-          />
-        </div>
+            className="flex justify-center items-center pt-3 pb-2 cursor-pointer select-none"
+            onClick={() => setMobileExpanded((v) => !v)}
+            role="button"
+            aria-label={mobileExpanded ? "Collapse object panel" : "Expand object panel"}
+          >
+            <div
+              style={{
+                width: "40px",
+                height: "4px",
+                backgroundColor: "#D4C5A9",
+                borderRadius: "9999px",
+              }}
+            />
+          </div>
 
-        <div
-          className="overflow-y-auto"
-          style={{ height: "calc(100% - 28px)" }}
-        >
-          <ObjectPanel
-            round={round}
-            roundNumber={currentRoundIndex + 1}
-            onHintReveal={onRevealHint}
-            expanded={mobileExpanded}
-            onToggleExpand={() => setMobileExpanded((v) => !v)}
-          />
+          <div
+            className="overflow-y-auto"
+            style={{ height: "calc(100% - 28px)" }}
+          >
+            <ObjectPanel
+              key={round.seed.objectID}
+              round={round}
+              roundNumber={currentRoundIndex + 1}
+              onHintReveal={onRevealHint}
+              expanded={mobileExpanded}
+              onToggleExpand={() => setMobileExpanded((v) => !v)}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

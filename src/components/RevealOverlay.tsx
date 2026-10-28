@@ -22,7 +22,7 @@ function formatDistance(km: number | null): string {
 }
 
 const MEDAL_LABELS: Record<string, string> = {
-  curator: "Perfect",
+  curator: "Curator",
   close: "Close",
   distant: "Distant",
   lost: "Lost",
@@ -35,10 +35,7 @@ function useCountUp(target: number, duration: number, active: boolean): number {
   const startRef = useRef<number | null>(null)
 
   useEffect(() => {
-    if (!active) {
-      setDisplayed(0)
-      return
-    }
+    if (!active) return
     startRef.current = null
 
     function step(timestamp: number) {
@@ -59,7 +56,7 @@ function useCountUp(target: number, duration: number, active: boolean): number {
     }
   }, [target, duration, active])
 
-  return displayed
+  return active ? displayed : 0
 }
 
 export function RevealOverlay({
@@ -76,21 +73,17 @@ export function RevealOverlay({
 
   const isReveal = phase === "reveal"
 
-  // Delay "next" button appearance after reveal; trigger stats/animation
+  // Delay "next" button appearance after reveal; trigger stats/animation.
+  // The parent keys this component by round and phase, so both flags start
+  // false on every reveal.
   useEffect(() => {
-    if (isReveal) {
-      setNextVisible(false)
-      setStatsVisible(false)
-      // Small delay so the panel renders first, then animate in stats
-      const tStats = setTimeout(() => setStatsVisible(true), 80)
-      const tNext = setTimeout(() => setNextVisible(true), 1200)
-      return () => {
-        clearTimeout(tStats)
-        clearTimeout(tNext)
-      }
-    } else {
-      setNextVisible(false)
-      setStatsVisible(false)
+    if (!isReveal) return
+    // Small delay so the panel renders first, then animate in stats
+    const tStats = setTimeout(() => setStatsVisible(true), 80)
+    const tNext = setTimeout(() => setNextVisible(true), 1200)
+    return () => {
+      clearTimeout(tStats)
+      clearTimeout(tNext)
     }
   }, [isReveal])
 

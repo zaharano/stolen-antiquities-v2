@@ -278,7 +278,8 @@ function MapMarkersForRound({ round, roundNumber }: { round: GameRound; roundNum
 // ─── Main ResultsScreen ────────────────────────────────────────────────────
 
 export function ResultsScreen({ gameState, onPlayAgain }: ResultsScreenProps) {
-  const [copied, setCopied] = useState(false)
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle")
+  const shareTextRef = useRef<HTMLPreElement>(null)
   const timeLeft = useCountdown()
 
   const totalScore = gameState.rounds.reduce(
@@ -313,12 +314,20 @@ export function ResultsScreen({ gameState, onPlayAgain }: ResultsScreenProps) {
   async function handleShare() {
     try {
       await navigator.clipboard.writeText(shareText)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setCopyStatus("copied")
+      setTimeout(() => setCopyStatus("idle"), 2000)
     } catch {
-      // Fallback: select text in the pre block
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      // Clipboard API unavailable or denied: select the preview text so the
+      // player can copy it manually, and say so instead of claiming success
+      const pre = shareTextRef.current
+      const selection = window.getSelection()
+      if (pre && selection) {
+        const range = document.createRange()
+        range.selectNodeContents(pre)
+        selection.removeAllRanges()
+        selection.addRange(range)
+      }
+      setCopyStatus("failed")
     }
   }
 
@@ -469,7 +478,7 @@ export function ResultsScreen({ gameState, onPlayAgain }: ResultsScreenProps) {
               </button>
 
               {/* "Copied!" toast */}
-              {copied && (
+              {copyStatus === "copied" && (
                 <div
                   className="absolute inset-0 flex items-center justify-center rounded pointer-events-none"
                   style={{
@@ -487,8 +496,19 @@ export function ResultsScreen({ gameState, onPlayAgain }: ResultsScreenProps) {
               )}
             </div>
 
+            {copyStatus === "failed" && (
+              <p
+                className="mt-2 text-sm text-ink-light"
+                style={{ fontFamily: "'Source Serif 4', serif" }}
+                role="status"
+              >
+                Couldn't copy automatically. The text below is selected, so copy it from there.
+              </p>
+            )}
+
             {/* Share text preview */}
             <pre
+              ref={shareTextRef}
               className="mt-3 p-4 rounded border border-sepia bg-parchment text-ink text-sm leading-relaxed overflow-x-auto"
               style={{
                 fontFamily: "'JetBrains Mono', monospace",

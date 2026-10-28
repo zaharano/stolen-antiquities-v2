@@ -566,6 +566,7 @@ function lookupRegion(region: string): [number, number] | null {
 }
 
 /** Try country lookup */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- not wired in yet; seed list v2 (docs/ROADMAP.md, Phase 4)
 function lookupCountry(country: string): [number, number] | null {
   if (!country) return null;
   const key = normalizeStr(country);
@@ -608,6 +609,7 @@ function assignDifficulty(
 // CONTINENT DETECTION for summary
 // ---------------------------------------------------------------------------
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- not wired in yet; seed list v2 (docs/ROADMAP.md, Phase 4)
 function getContinent(country: string): string {
   const key = normalizeStr(country);
   if (CONTINENT_MAP[key]) return CONTINENT_MAP[key];
@@ -650,6 +652,7 @@ function buildNotes(candidate: Candidate, resolution: ResolutionLevel): string {
  *   - Arts of Africa, Oceania, and the Americas
  *   - Musical instruments from non-European traditions
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- not wired in yet; seed list v2 (docs/ROADMAP.md, Phase 4)
 function isGameplayRelevant(candidate: Candidate): boolean {
   const country = normalizeStr(candidate.country);
   const city = normalizeStr(candidate.city);

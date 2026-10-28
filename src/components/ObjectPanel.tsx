@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import type { GameRound } from "../types"
+import { HINT_PENALTY } from "../lib/scoring"
 
 interface ObjectPanelProps {
   round: GameRound
@@ -67,12 +68,8 @@ export function ObjectPanel({
   onToggleExpand,
 }: ObjectPanelProps) {
   const [modalOpen, setModalOpen] = useState(false)
+  // The parent keys this component by objectID, so this resets each round
   const [imgLoaded, setImgLoaded] = useState(false)
-
-  // Reset image loaded state when the round (and thus the image URL) changes
-  useEffect(() => {
-    setImgLoaded(false)
-  }, [round.seed.objectID])
 
   const hints = getHints(round)
   const totalRounds = 10
@@ -175,7 +172,7 @@ export function ObjectPanel({
                   </p>
                   {hints.map((hint) => {
                     const isRevealed = hint.index < round.hintsUsed
-                    const cost = (hint.index + 1) * 150
+                    const cost = HINT_PENALTY
 
                     return (
                       <div key={hint.index}>

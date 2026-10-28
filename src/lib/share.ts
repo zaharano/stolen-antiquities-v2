@@ -35,6 +35,6 @@ export function generateShareText(state: GameState): string {
     row2,
     "",
     `⏱️ ${totalHints} hints used`,
-    "stolenantiquities.app",
+    "stolen-antiquities.com",
   ].join("\n")
 }
