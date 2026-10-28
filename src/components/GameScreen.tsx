@@ -8,6 +8,7 @@ import { BottomSheet } from "./BottomSheet"
 import type { AppPhase } from "../hooks/useGameState"
 import { useMediaQuery } from "../hooks/useMediaQuery"
 import { ROUND_SECONDS } from "../lib/round"
+import { scoringVersionFor, scoringZones } from "../lib/scoring"
 
 interface GameScreenProps {
   gameState: GameState
@@ -44,6 +45,7 @@ export function GameScreen({
   const round = gameState.rounds[currentRoundIndex]
   const totalRounds = gameState.rounds.length
   const correctPin: [number, number] = [round.seed.lat, round.seed.lng]
+  const zones = scoringZones(round.seed, scoringVersionFor(gameState.date))
   const playerPin = isReveal ? round.playerGuess : (round.pendingGuess ?? null)
 
   // Stop pull-to-refresh and overscroll bounce while playing
@@ -145,6 +147,7 @@ export function GameScreen({
           interactive={isPlaying}
           roundKey={currentRoundIndex}
           onUserInteract={() => setSheetOpen(false)}
+          zones={zones}
         />
 
         {/* Confirm button / reveal card, anchored to the bottom of the map
@@ -156,6 +159,7 @@ export function GameScreen({
           totalRounds={totalRounds}
           pendingPin={isPlaying ? (round.pendingGuess ?? null) : null}
           phase={isReveal ? "reveal" : "playing"}
+          zones={zones}
           onConfirm={handleConfirm}
           onNext={handleNextRound}
         />

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import type { GameRound } from "../types"
+import type { ScoringZones } from "../lib/scoring"
 import { MEDAL_EMOJIS } from "../lib/share"
 
 interface RevealOverlayProps {
@@ -10,6 +11,8 @@ interface RevealOverlayProps {
   pendingPin: [number, number] | null
   /** Phase: playing (pre-confirm) or reveal (post-confirm) */
   phase: "playing" | "reveal"
+  /** Scoring radii for this object, explained on the reveal card */
+  zones: ScoringZones
   onConfirm: () => void
   onNext: () => void
 }
@@ -65,6 +68,7 @@ export function RevealOverlay({
   totalRounds,
   pendingPin,
   phase,
+  zones,
   onConfirm,
   onNext,
 }: RevealOverlayProps) {
@@ -112,6 +116,7 @@ export function RevealOverlay({
   // Reveal phase
   return (
     <div
+      data-reveal-card
       className="absolute inset-x-3 bottom-9 z-[500] sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[360px] animate-[fadeIn_200ms_ease-out]"
     >
       <div className="bg-parchment border border-sepia rounded shadow-xl px-5 py-4 short:py-2">
@@ -204,6 +209,14 @@ export function RevealOverlay({
             </>
           )}
         </div>
+
+        {/* How big the full-points zone is here (the map shows it too) */}
+        <p
+          className="text-ink-light text-xs text-center -mt-2 mb-3 short:hidden"
+          style={{ fontFamily: "'Source Serif 4', serif" }}
+        >
+          Full points within {Math.round(zones.fullPointsKm / 5) * 5} km for this object
+        </p>
 
         {/* Next button */}
         <div

@@ -187,3 +187,27 @@ test("a failed load shows an error with a working retry", async ({ page, context
   await page.getByRole("button", { name: "Try again" }).click()
   await expect(page.locator('[aria-label$="seconds remaining"]')).toHaveCount(1)
 })
+
+test("v2 scoring: the reveal shows this object's full-points zone", async ({ page }) => {
+  // A game date after SCORING_V2_START
+  await page.clock.install({ time: new Date("2026-11-05T12:00:00Z") })
+  await startGame(page)
+  const box = (await page.locator("main").boundingBox())!
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+  await page.getByRole("button", { name: "Confirm Placement" }).click()
+
+  const zoneText = page.getByText(/Full points within \d+ km for this object/)
+  if (!(await hasSidePanel(page)) || (page.viewportSize()?.height ?? 0) > 500) {
+    await expect(zoneText).toBeVisible()
+  }
+  // The answer's zones are drawn on the map
+  await expect(page.locator("path.scoring-zone-full")).toHaveCount(1)
+  await expect(page.locator("path.scoring-zone-close")).toHaveCount(1)
+
+  // The text matches the object's scale from the seed list
+  const seed = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)!).rounds[0].seed, "stolen-antiquities-2026-11-05")
+  expect(seed.scaleKm).toBeGreaterThanOrEqual(700)
+  if (await zoneText.isVisible()) {
+    await expect(zoneText).toHaveText(`Full points within ${Math.round(seed.scaleKm / 4 / 5) * 5} km for this object`)
+  }
+})

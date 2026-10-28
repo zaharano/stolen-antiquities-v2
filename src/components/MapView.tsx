@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react"
-import { AttributionControl, MapContainer, Marker, Polyline, useMapEvents, useMap } from "react-leaflet"
+import { AttributionControl, Circle, MapContainer, Marker, Polyline, useMapEvents, useMap } from "react-leaflet"
 import L from "leaflet"
 import { BaseTileLayer } from "./BaseTileLayer"
+import type { ScoringZones } from "../lib/scoring"
 
 // Red pushpin SVG for player guess
 const playerIcon = L.divIcon({
@@ -28,8 +29,9 @@ const correctIcon = L.divIcon({
 // Inhabited world, roughly: fits on any screen at the start of each round
 const WORLD_BOUNDS = L.latLngBounds([-50, -170], [72, 190])
 
-// Space kept clear at the bottom of the map for the reveal card
-const REVEAL_CARD_SPACE = 260
+// Space kept clear at the bottom of the map for the reveal card, if it can't
+// be measured (see BoundsFitter)
+const REVEAL_CARD_SPACE = 300
 
 // On touch screens a double-tap would also drop a pin; pinch zoom covers it
 const isCoarsePointer =
@@ -44,6 +46,8 @@ export interface MapViewProps {
   roundKey: number  // changes each round — triggers view reset
   /** Called on any touch/click on the map (used to collapse the mobile sheet) */
   onUserInteract?: () => void
+  /** Scoring radii drawn around the answer at the reveal */
+  zones?: ScoringZones
 }
 
 // Inner component to handle map click events
@@ -122,8 +126,15 @@ function BoundsFitter({
   useEffect(() => {
     if (showReveal && !prevShowReveal.current && correctPin) {
       const bounds = L.latLngBounds(playerPin ? [playerPin, correctPin] : [correctPin])
-      // Keep both pins clear of the reveal card along the bottom
-      const bottom = Math.min(REVEAL_CARD_SPACE, map.getSize().y * 0.5)
+      // Keep both pins clear of the reveal card along the bottom. The card is
+      // a sibling of the map (RevealOverlay, marked data-reveal-card), so
+      // measure how far its top edge reaches up into the map.
+      const container = map.getContainer()
+      const card = container.parentElement?.querySelector("[data-reveal-card]")
+      const cardSpace = card
+        ? container.getBoundingClientRect().bottom - card.getBoundingClientRect().top + 16
+        : REVEAL_CARD_SPACE
+      const bottom = Math.min(cardSpace, map.getSize().y * 0.6)
       map.fitBounds(bounds, {
         paddingTopLeft: [40, 40],
         paddingBottomRight: [40, bottom],
@@ -144,6 +155,7 @@ export function MapView({
   interactive,
   roundKey,
   onUserInteract,
+  zones,
 }: MapViewProps) {
   return (
     <MapContainer
@@ -174,6 +186,27 @@ export function MapView({
       {/* Player's pin */}
       {playerPin && (
         <Marker position={playerPin} icon={playerIcon} />
+      )}
+
+      {/* Scoring zones around the answer — only on reveal. Gold disc: full
+          points; dashed ring: "close" medal. */}
+      {showReveal && correctPin && zones && (
+        <>
+          <Circle
+            center={correctPin}
+            radius={zones.closeKm * 1000}
+            interactive={false}
+            className="scoring-zone-close"
+            pathOptions={{ color: "#B8A88A", weight: 1.5, dashArray: "4 4", fill: false }}
+          />
+          <Circle
+            center={correctPin}
+            radius={zones.fullPointsKm * 1000}
+            interactive={false}
+            className="scoring-zone-full"
+            pathOptions={{ color: "#C8A951", weight: 1, fillColor: "#C8A951", fillOpacity: 0.18 }}
+          />
+        </>
       )}
 
       {/* Correct location pin — only on reveal */}
