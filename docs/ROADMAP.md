@@ -83,65 +83,46 @@ Original options considered, for reference:
 
 Goal: one thumb, a 375 px wide phone, bad network, and nothing ever overlaps or gets stuck.
 
-**Layout architecture**
-- Render **one layout**, not both. Use a `useMediaQuery` hook (or a `matchMedia`-backed
-  `useLayout()`) and mount either the desktop panel or the mobile sheet. That fixes the
-  double timer and double image load.
-- Mobile game screen as a **3-row grid**: `[timer/HUD] [map 1fr] [sheet]`. Make the sheet a
-  real row instead of a `fixed` overlay, so the Confirm button and reveal card are placed
-  relative to the visible map and can't collide with the sheet.
-- **Sheet states:** `peek` (thumbnail + title, ~88 px + safe area), `half` (~45 dvh: image
-  + hints), `full` (image focus). Start each round at `half`; auto-drop to `peek` on the
-  first map `movestart`/`zoomstart`/tap. Support a **drag gesture** (pointer events with
-  velocity snap; no library needed) as well as tap on the handle (min 44 px hit area).
-- **Phone landscape** (`(orientation: landscape) and (max-height: 500px)`): use the side
-  panel layout at ~40% width with a compact image.
+Done:
+- [x] **One layout mounted.** Phone portrait is a column (HUD bar → map → sheet); desktop
+      and phone landscape (`max-height: 500px`) use the side panel. Rotating keeps the map
+      mounted.
+- [x] **Sheet in normal flow**, not floating over the map. It has two states (peek and
+      open, at most 46 dvh), toggles by tap or swipe on a 44 px handle, opens for each new
+      object, and collapses on any map touch and at the reveal. The map resizes with it
+      without shifting under the finger.
+- [x] Compact sheet content: the image is contained (nothing cropped), hints sit side by
+      side, and the round counter moved to the HUD.
+- [x] The zoom control is no longer covered. Credits sit on the bottom edge, and the
+      Confirm button and reveal card are lifted above them. Reveal fitting keeps both pins
+      clear of the card, and fits the answer even when there was no guess.
+- [x] Each round starts with the whole world in view (fractional zoom, `zoomSnap 0.25`).
+- [x] Double-tap zoom is off on touch screens (it also dropped a pin).
+- [x] The image modal is portalled above everything, closes on Escape, and has a 44 px
+      close button. Broken images show "Image unavailable" instead of shimmering forever.
+- [x] Safe areas (`viewport-fit=cover`) on every screen; `theme-color`; no
+      pull-to-refresh during play; no tap highlight flash.
+- [x] **State resilience:** `startedAt` and `pendingGuess` are saved, so a reload resumes
+      the countdown and keeps the pin. **A pin left on the map when time runs out is now
+      scored** (per the GDD) instead of counting as lost.
+- [x] Next object's image is prefetched.
+- [x] Results: the map is locked on touch screens until tapped (no scroll trap). Phones
+      get the native share sheet, with clipboard and select-text fallbacks. Larger "Back
+      to start" target.
+- [x] Compact splash on short screens, so Begin is visible in landscape.
+- [x] **Playwright suite** (`npm run test:e2e`, CI job) on 7 sizes from a 280 px Fold to
+      desktop, asserting nothing important is covered, nothing overflows sideways, the
+      sheet behaves, and reload and timeout behave.
 
-**Overlap and z-index**
-- With the filter moved to the tile pane (Phase 1), there's one z-index scale in
-  `index.css`: map 0 < map controls 400 < HUD 500 < sheet 600 < reveal 700 < modal 900.
-- Move the zoom control to `bottomright` on mobile, or hide it (pinch is enough), so the
-  HUD stops covering it.
-- Render the image modal through a **portal** to `document.body`. Close it on Escape and
-  on back gesture (`history.pushState` and `popstate`).
-
-**Safe areas and viewport**
-- `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">`.
-- Pad the HUD with `env(safe-area-inset-top)`, the sheet and bottom buttons with
-  `env(safe-area-inset-bottom)`, and the sides in landscape.
-- Keep using `dvh`. Also add `overscroll-behavior: none` on the game screen, to stop
-  pull-to-refresh and rubber-banding mid-pan.
-
-**Touch interaction**
-- **Tap vs pan vs double-tap.** Only place a pin on a `click` that wasn't part of a drag,
-  and debounce it ~250 ms so a double-tap zoom doesn't also move the pin. Alternatively,
-  show a draggable pin after the first tap so fine-tuning doesn't need precise re-taps.
-- Big Confirm button (min 48 px tall), full width inside the map's bottom area, with haptic
-  `navigator.vibrate(10)` where supported.
-- **Results overview map:** disable `dragging` and `tap` on touch until the user taps it
-  (a "Tap to explore" scrim) or uses two fingers. This removes the scroll trap.
-
-**State resilience**
-- Persist the **round start timestamp** and pending pin. On resume, the timer continues
-  from where it was (it doesn't reset to 30 s), and an expired round resolves immediately.
-- Handle `visibilitychange`/`pagehide` so state is saved when iOS kills the tab.
-- **Prefetch the next round's image** during the reveal (`new Image().src = …`) and
-  decode it before showing. Use `primaryImageSmall` in the panel and full-res only in the
-  modal.
-
-**Sharing**
-- Use **`navigator.share`** on mobile (native share sheet), falling back to the clipboard,
-  then to selecting the `<pre>`. Only show "Copied!" when it actually worked.
-
-**Verification (make it repeatable)**
-- Playwright project with device profiles: iPhone SE (375×667), iPhone 15 (393×852),
-  Pixel 7 (412×915), Galaxy Fold folded (~280 wide), phone landscape, iPad.
-  - Stub the Met API and tiles with fixtures, play a full game scripted, screenshot each
-    phase, and assert no overlap: the Confirm button's bounding box doesn't intersect the
-    sheet, and the HUD doesn't intersect the zoom control.
-- Real-device pass on iOS Safari and Android Chrome. Watch for the address bar
-  collapsing/expanding mid-round.
-- Lighthouse mobile ≥ 90. Fonts: preload, plus a `font-display: swap` fallback stack.
+Remaining:
+- [ ] **Real-device pass** on iOS Safari and Android Chrome. The suite runs Chromium with
+      device viewports, so it can't catch Safari-specific behaviour (the address bar
+      resizing `dvh`, rubber-banding, `navigator.share` quirks).
+- [ ] Android back button: it currently leaves the site (progress is saved). Consider
+      `history.pushState` per round, or back-to-close for the image modal.
+- [ ] Sheet follows the finger while dragging (it currently snaps on release).
+- [ ] Optional: draggable pin for fine adjustment; haptic tick on pin drop.
+- [ ] Lighthouse mobile ≥ 90; preload fonts.
 
 ## Phase 3: Scoring v2 (region-aware)
 

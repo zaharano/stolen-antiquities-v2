@@ -30,6 +30,7 @@ npm run dev       # Vite dev server
 npm run build     # tsc -b && vite build  → dist/
 npm run lint      # eslint (clean; keep it that way)
 npm test          # vitest run (unit tests for src/lib/*)
+npm run test:e2e  # Playwright: builds, serves, and checks layout on 7 phone/tablet/desktop sizes
 npm run preview   # serve dist/
 
 # Seed-list pipeline (offline, only when changing the object pool)
@@ -37,8 +38,10 @@ npx tsx scripts/curate-seed-list.ts      # needs MetObjects.csv at repo root (gi
 npx tsx scripts/geocode-and-finalize.ts  # candidates.json → public/data/seed-objects.json (deterministic)
 ```
 
-CI (`.github/workflows/ci.yml`) runs `npm ci`, lint, test and build on PRs and pushes to
-`main`. Tests live next to the code as `src/lib/*.test.ts`. Deploy is a gitignored local
+CI (`.github/workflows/ci.yml`) runs `npm ci`, lint, test and build, plus the Playwright
+suite as a second job, on PRs and pushes to `main`. Unit tests live next to the code as
+`src/lib/*.test.ts`; browser tests are `e2e/*.e2e.ts`, with network stubs and overlap
+helpers in `e2e/fixtures.ts`. Deploy is a gitignored local
 `deploy.sh`. The live site is **stolen-antiquities.com**.
 
 ---
@@ -50,26 +53,29 @@ src/
   main.tsx                 React root; imports leaflet.css + index.css
   App.tsx                  Phase router: splash → playing/reveal → results
   types.ts                 SeedObject, MetObject, GameRound, GameState, GameHistoryEntry, Medal
-  hooks/useGameState.ts    THE game state machine (init, guess, timeout, hints, next, results, loadError)
-  hooks/useMediaQuery.ts   Live CSS media query (picks desktop vs mobile layout)
+  hooks/useGameState.ts    THE game state machine (init, placePin, guess, timeout, hints, next, results, loadError)
+  hooks/useMediaQuery.ts   Live CSS media query (picks side-panel vs mobile layout)
   lib/
     daily-selection.ts     Date → 10 seeds (seeded PRNG + Fisher–Yates). Determinism lives here.
     scoring.ts             Haversine distance, score curve, hint penalty, medals, day number (epoch 2026-03-01)
+    round.ts               ROUND_SECONDS and resolveRound(): turn a guess (or none) into a scored round
     met-api.ts             Fetch Met objects (batches of 5, retry on 429, 8 s timeout)
     map-tiles.ts           Tile provider config (Stadia styles, OSM fallback), env-driven
     storage.ts             localStorage read/write, UTC "today", history
     share.ts               Share text + MEDAL_EMOJIS
   components/
     SplashScreen.tsx       Title, Begin / View Results / Practice, past-games list
-    GameScreen.tsx         Layout: desktop side panel (lg+) vs mobile bottom sheet; mounts Timer, MapView, ObjectPanel, RevealOverlay
+    GameScreen.tsx         Layout: side panel (desktop, phone landscape) vs HUD + map + sheet (phone portrait)
+    BottomSheet.tsx        Mobile object sheet: in flow under the map, tap/swipe to open or collapse
     BaseTileLayer.tsx      The one TileLayer both maps use; falls back to OSM if the primary fails
     MapView.tsx            Leaflet map for play: click-to-pin, reset view per round, fit bounds on reveal
-    ObjectPanel.tsx        Image (+ full-res modal), title/date, progressive hints
+    ObjectPanel.tsx        Image (+ portal full-res modal), title/date, hints; "side" and "sheet" variants; ObjectPeek
     RevealOverlay.tsx      "Confirm Placement" button, then the reveal card (medal, distance, count-up score)
-    Timer.tsx              30 s countdown bar, handles tab backgrounding
-    ResultsScreen.tsx      Totals, per-object cards, overview map, share, countdown
+    Timer.tsx              Countdown bar derived from the round's startedAt (survives reloads and background tabs)
+    ResultsScreen.tsx      Totals, per-object cards, overview map (touch-gated), share sheet/clipboard, countdown
   index.css                Tailwind @theme tokens (colors/fonts), keyframes, Leaflet sepia filter
 public/data/seed-objects.json   283 objects: { objectID, lat, lng, difficulty, notes }
+e2e/                       Playwright layout/behaviour tests (playwright.config.ts lists the device sizes)
 scripts/
   curate-seed-list.ts      MetObjects.csv → candidates.json (public domain + highlight + has country)
   geocode-and-finalize.ts  Static lookup tables CITY_COORDS (l.43) / REGION_COORDS (l.268) / COUNTRY_COORDS (l.328),
@@ -89,9 +95,12 @@ docs/  GDD.md (game design), DESIGN.md (visual system — still authoritative), 
    `getDailyObjects(date, seeds)` → `prefetchDailyObjects()` (all 10 Met objects up front;
    individual failures become `metData: null`). If the seed list fails, `loadError` is set
    and `App` shows an error screen with "Try again".
-4. Per round: map click sets a pending pin (local state in `GameScreen`) → Confirm →
-   `submitGuess` computes distance/score/medal → phase `reveal` → `nextRound`.
-   Timer expiry → `submitTimeout` (score 0, medal `lost`).
+4. Per round: the round's `startedAt` is set when it begins. A map tap calls `placePin`,
+   which saves `pendingGuess`. Confirm → `submitGuess` → `resolveRound()` scores it →
+   phase `reveal` → `nextRound`. Timer expiry → `submitTimeout`, which **scores the
+   pending pin if there is one** (as the GDD intended), else the round is lost (score 0).
+   Actions read the latest state from `stateRef`, so timer callbacks never act on a stale
+   snapshot.
 5. After round 10 → `completed: true`, append to `stolen-antiquities-history`, show results.
 
 ### Invariants: read before changing these
@@ -151,12 +160,28 @@ Both maps render `<BaseTileLayer />`, configured in `src/lib/map-tiles.ts`.
 - Components often set `fontFamily` inline (`'DM Serif Display'`, `'Source Serif 4'`,
   `'JetBrains Mono'`) and some hex colors inline. Prefer the `font-display` / `font-body` /
   `font-mono` tokens in new code. Match surrounding code when editing.
-- Leaflet z-index: overlays on the map use `z-[1000]`; the mobile bottom sheet uses
-  `z-[900]`. `.leaflet-container` has `isolation: isolate`, so Leaflet's internal z-indexes
-  (panes 400, controls 1000) stay inside the map and below sibling overlays. The sepia
-  filter is on `.leaflet-tile-pane` only, so pins keep their true colours.
-- Layout breakpoint is 1024 px (`useMediaQuery("(min-width: 1024px)")` in `GameScreen`):
-  side panel on desktop, bottom sheet below that. **Only one layout is mounted.**
+- **Layout.** `GameScreen` picks one layout with `useMediaQuery`: a side panel when
+  `(min-width: 1024px)` or a short landscape screen (`max-height: 500px`), otherwise a
+  column of HUD bar → map → `BottomSheet`. **Only one layout is mounted.** The sheet is in
+  normal flow, not floating, so the map area shrinks when it opens and anything anchored
+  to the bottom of the map can't end up under it. `MapView` watches its container with a
+  `ResizeObserver` (`invalidateSize({ pan: false })`, so the map doesn't shift under a
+  finger). Any pointerdown on the map collapses the sheet.
+- **z-index.** `.leaflet-container` has `isolation: isolate`, so Leaflet's internal
+  z-indexes (panes 400, controls 1000) stay inside the map. Overlays on the map
+  (Confirm button, reveal card) use `z-[500]`; the full-size image modal is portalled to
+  `<body>` at `z-[2000]`. The sepia filter is on `.leaflet-tile-pane` only.
+- **Bottom of the map.** Leaflet's attribution is bottom-right (rarely tapped there,
+  unlike the top). The Confirm button and reveal card sit at `bottom-9` to clear it, and
+  `BoundsFitter` keeps pins above the card (`REVEAL_CARD_SPACE`).
+- **Safe areas.** `viewport-fit=cover` is on, so every screen pads with
+  `env(safe-area-inset-*)` (HUD top, sheet bottom, sides of the game root, splash and
+  results). Keep that when adding full-bleed UI.
+- **`short:` variant** (`@custom-variant` in `index.css`) = `max-height: 500px`, i.e.
+  phones in landscape. Use it for compact spacing.
+- **Touch.** Double-tap zoom is off on coarse pointers (it would also drop a pin). Tap
+  targets are at least 44 px (`min-h-11`). The results map starts locked on touch screens
+  ("Tap to explore the map") so one-finger drags scroll the page.
 - Components that reset per round (`Timer`, `ObjectPanel`, `RevealOverlay`) are **keyed by
   round/object** in `GameScreen` instead of resetting state in effects. Keep that pattern;
   the `react-hooks/set-state-in-effect` lint rule enforces it.
@@ -169,21 +194,17 @@ Fixed in Phase 0: the practice-timeout overwrite, the double Timer/ObjectPanel, 
 cost label, "Perfect" → "Curator", no error handling or fetch timeout in `initGame`, the
 dishonest "Copied!" fallback, and the wrong domain in the share text.
 
+Fixed in Phase 2 (mobile): zoom control hidden under the timer, the 75 dvh sheet, Confirm
+and reveal card overlapping the sheet, no safe areas, the image modal under the HUD, the
+results-map scroll trap, phone landscape, the timer resetting on reload, the lost pending
+pin, and the attribution covering the reveal card. `e2e/game.e2e.ts` guards all of these.
+
 Still open:
-- **Reloading mid-round resets the timer to 30 s** and drops the pending pin.
 - A Met failure is saved as `metData: null` for the whole day, with no retry.
 - Practice ("Play again") replays the **same** 10 objects as the daily game.
-
-Mobile (details and a fix plan are in the roadmap):
-- The mobile timer bar (`absolute top-0 z-[1000]`) covers Leaflet's top-left zoom "+".
-- The bottom sheet opens at 75 dvh, which leaves about a quarter of the map tappable. It
-  doesn't collapse when you interact with the map and can't be dragged.
-- The Confirm button and reveal card (`bottom-6`) overlap the bottom sheet. There's no
-  `safe-area-inset` handling for the iPhone home indicator, and no `viewport-fit=cover`.
-- The full-res image modal (`z-50`) renders inside the sheet's `z-[900]` stacking context,
-  so the timer bar and Confirm button draw on top of it.
-- The results overview map captures one-finger drags (scroll trap on phones).
-- Phone landscape gets the portrait bottom-sheet layout, which is unusable at ~390 px tall.
+- Android's back button leaves the site mid-game (progress is saved, so Begin resumes).
+- Verified in Chromium device emulation only; still needs a pass on real iOS Safari and
+  Android Chrome.
 
 Data and pipeline:
 - `isGameplayRelevant()` in `geocode-and-finalize.ts` is **defined but never called**, so
@@ -211,9 +232,12 @@ The GDD's scoring table (≤ 50 km perfect, 5000 km cutoff), medals (🌍 Contin
 - Keep `src/lib/*` pure and framework-free; put React state in `useGameState`.
 - Any change to selection, the seed list, or scoring changes the game for everyone. Call
   it out in the PR and say whether it needs a cutover date.
-- Run `npm run lint && npm test && npm run build` before pushing; CI runs the same.
-- After UI changes, check at least 375×667 (iPhone SE), 390×844 (iPhone 13/14), 844×390
-  (phone landscape) and ≥1024 desktop. Playwright + Chromium is available in cloud sessions
-  for screenshot checks. External hosts (Met API, Stadia, OSM) may be blocked by the sandbox
+- Run `npm run lint && npm test && npm run build` before pushing, plus
+  `npm run test:e2e` after any UI change; CI runs all of them.
+- The e2e suite covers 280×653 (Fold), 375×667 (iPhone SE), 393×852, 412×915, 844×390
+  (phone landscape), 768×1024 (iPad) and 1280×800. Its `expectOnTop` / `expectNoOverlap`
+  helpers are the quickest way to pin a new layout rule. Tests attach screenshots
+  (`--reporter=html` to browse them). Playwright + Chromium is preinstalled in cloud sessions;
+  `@playwright/test` is pinned to the same version (1.63.0). External hosts (Met API, Stadia, OSM) may be blocked by the sandbox
   network policy, so stub them with `context.route()` when testing there.
 - Never hand-edit `seed-objects.json`; change the pipeline and regenerate.
