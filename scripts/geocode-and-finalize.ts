@@ -10,6 +10,10 @@
 import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+// Country centres (ODbL, github.com/mledoze/countries). Only used here to
+// derive each seed's scaleKm; the dataset itself is not shipped.
+import countries from "world-countries";
+import { regionScaleKm } from "../src/lib/region-scale";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, "..");
@@ -32,7 +36,16 @@ interface SeedObject {
   lng: number;
   difficulty: "easy" | "medium" | "hard";
   notes: string;
+  scaleKm?: number;
 }
+
+// Hand-tuned scoring scales (km) for objects where the neighbour-density
+// heuristic in src/lib/region-scale.ts gets it wrong. Keyed by objectID.
+const SCALE_OVERRIDES: Record<number, number> = {};
+
+const COUNTRY_CENTROIDS = countries
+  .filter((c) => c.unMember)
+  .map((c) => [c.latlng[0], c.latlng[1]] as const);
 
 // ---------------------------------------------------------------------------
 // LOOKUP MAPS
@@ -859,7 +872,11 @@ async function main(): Promise<void> {
   // Sort by objectID so the list isn't country-clustered
   balanced.sort((a, b) => a.objectID - b.objectID);
 
-  const finalList = balanced;
+  // Scoring v2 scale per object (see src/lib/scoring.ts)
+  const finalList = balanced.map((obj) => ({
+    ...obj,
+    scaleKm: SCALE_OVERRIDES[obj.objectID] ?? regionScaleKm(obj.lat, obj.lng, COUNTRY_CENTROIDS),
+  }));
 
   writeFileSync(outputPath, JSON.stringify(finalList, null, 2), "utf-8");
 
@@ -882,6 +899,12 @@ async function main(): Promise<void> {
   console.log(`  easy:   ${diffCounts.easy} (${pct(diffCounts.easy, finalList.length)}%)`);
   console.log(`  medium: ${diffCounts.medium} (${pct(diffCounts.medium, finalList.length)}%)`);
   console.log(`  hard:   ${diffCounts.hard} (${pct(diffCounts.hard, finalList.length)}%)`);
+
+  // Scoring scale breakdown
+  const scales = finalList.map((o) => o.scaleKm).sort((a, b) => a - b);
+  console.log(
+    `\nScoring scale (km): min ${scales[0]}, median ${scales[Math.floor(scales.length / 2)]}, max ${scales[scales.length - 1]}`
+  );
 
   // Per-country breakdown
   const countryCounts: Record<string, number> = {};

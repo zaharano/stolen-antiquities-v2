@@ -1,5 +1,5 @@
 import type { GameRound } from "../types"
-import { calculateDistance, calculateScore, getMedal } from "./scoring"
+import { calculateDistance, scoreGuess, type ScoringVersion } from "./scoring"
 
 /** Seconds the player has to place and confirm a pin for each object. */
 export const ROUND_SECONDS = 30
@@ -8,7 +8,11 @@ export const ROUND_SECONDS = 30
  * Score a round. `guess` is the confirmed pin, or the unconfirmed pin left on
  * the map when time ran out. With no guess at all the round is lost.
  */
-export function resolveRound(round: GameRound, guess: [number, number] | null): GameRound {
+export function resolveRound(
+  round: GameRound,
+  guess: [number, number] | null,
+  version: ScoringVersion
+): GameRound {
   if (!guess) {
     return {
       ...round,
@@ -23,14 +27,14 @@ export function resolveRound(round: GameRound, guess: [number, number] | null): 
 
   const [lat, lng] = guess
   const distanceKm = calculateDistance(lat, lng, round.seed.lat, round.seed.lng)
-  const score = calculateScore(distanceKm, round.hintsUsed)
+  const { score, medal } = scoreGuess(distanceKm, round.hintsUsed, round.seed, version)
   return {
     ...round,
     playerGuess: guess,
     pendingGuess: null,
     distanceKm,
     score,
-    medal: getMedal(distanceKm, score, false),
+    medal,
     timedOut: false,
   }
 }

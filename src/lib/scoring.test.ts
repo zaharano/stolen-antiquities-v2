@@ -1,5 +1,19 @@
 import { describe, expect, it } from "vitest"
-import { HINT_PENALTY, calculateDistance, calculateScore, getDayNumber, getMedal } from "./scoring"
+import {
+  DEFAULT_SCALE_KM,
+  HINT_PENALTY,
+  SCORING_V2_START,
+  calculateDistance,
+  calculateScore,
+  calculateScoreV2,
+  getDayNumber,
+  getMedal,
+  getMedalV2,
+  scoreGuess,
+  scoringVersionFor,
+  scoringZones,
+} from "./scoring"
+import type { SeedObject } from "../types"
 
 describe("calculateDistance", () => {
   it("is zero for the same point", () => {
@@ -74,5 +88,67 @@ describe("getDayNumber", () => {
     expect(getDayNumber("2026-03-01")).toBe(0)
     expect(getDayNumber("2026-03-02")).toBe(1)
     expect(getDayNumber("2026-10-28")).toBe(241)
+  })
+})
+
+describe("scoring v2 (region-scaled)", () => {
+  const seed = (scaleKm?: number): SeedObject => ({ objectID: 1, lat: 0, lng: 0, difficulty: "easy", scaleKm })
+
+  it("switches on the game date, not the deploy", () => {
+    expect(scoringVersionFor("2026-10-31")).toBe(1)
+    expect(scoringVersionFor(SCORING_V2_START)).toBe(2)
+    expect(scoringVersionFor("2027-01-01")).toBe(2)
+  })
+
+  it("gives full points within a quarter of the scale and nothing beyond three times it", () => {
+    expect(calculateScoreV2(175, 0, 700)).toBe(1000)
+    expect(calculateScoreV2(176, 0, 700)).toBeLessThan(1000)
+    expect(calculateScoreV2(2100, 0, 700)).toBe(0)
+    expect(calculateScoreV2(9000, 0, 700)).toBe(0)
+  })
+
+  it("is kinder to the same miss in a sparse region than a crowded one", () => {
+    // The tuning table in docs/ROADMAP.md (Phase 3); update both together
+    expect(calculateScoreV2(1000, 0, 700)).toBe(187) // Paris, Rome
+    expect(calculateScoreV2(1000, 0, 1300)).toBe(534) // Isfahan
+    expect(calculateScoreV2(1000, 0, 2200)).toBe(793) // Beijing, Kyoto
+    expect(calculateScoreV2(500, 0, 700)).toBe(574)
+  })
+
+  it("never increases with distance", () => {
+    let previous = Infinity
+    for (let d = 0; d <= 8000; d += 50) {
+      const score = calculateScoreV2(d, 0, 1300)
+      expect(score).toBeLessThanOrEqual(previous)
+      previous = score
+    }
+  })
+
+  it("applies the same flat hint penalty", () => {
+    expect(calculateScoreV2(0, 2, 700)).toBe(1000 - 2 * HINT_PENALTY)
+  })
+
+  it("awards medals relative to the scale", () => {
+    expect(getMedalV2(175, 1000, false, 700)).toBe("curator")
+    expect(getMedalV2(700, 384, false, 700)).toBe("close")
+    expect(getMedalV2(701, 383, false, 700)).toBe("distant")
+    expect(getMedalV2(100, 1000, true, 700)).toBe("lost")
+    expect(getMedalV2(5000, 0, false, 700)).toBe("lost")
+  })
+
+  it("scoreGuess matches v1 exactly before the switch", () => {
+    for (const d of [0, 400, 600, 900, 1500, 2000, 5000]) {
+      const v1 = calculateScore(d, 1)
+      expect(scoreGuess(d, 1, seed(700), 1)).toEqual({ score: v1, medal: getMedal(d, v1, false) })
+    }
+  })
+
+  it("scoreGuess falls back to the default scale for seeds without one", () => {
+    expect(scoreGuess(1000, 0, seed(undefined), 2).score).toBe(calculateScoreV2(1000, 0, DEFAULT_SCALE_KM))
+  })
+
+  it("reports the zones drawn on the map", () => {
+    expect(scoringZones(seed(700), 1)).toEqual({ fullPointsKm: 400, closeKm: 1500 })
+    expect(scoringZones(seed(700), 2)).toEqual({ fullPointsKm: 175, closeKm: 700 })
   })
 })

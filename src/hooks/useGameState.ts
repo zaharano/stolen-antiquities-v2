@@ -3,6 +3,7 @@ import type { GameState, GameRound, SeedObject } from "../types"
 import { getDailyObjects } from "../lib/daily-selection"
 import { prefetchDailyObjects } from "../lib/met-api"
 import { resolveRound } from "../lib/round"
+import { scoringVersionFor } from "../lib/scoring"
 import { saveGameState, loadGameState, getTodayDateString, appendGameToHistory } from "../lib/storage"
 
 export type AppPhase = "splash" | "playing" | "reveal" | "results"
@@ -150,7 +151,7 @@ export function useGameState(): UseGameStateReturn {
       const state = stateRef.current
       if (!state || state.phase !== "playing") return
       commit({
-        ...withCurrentRound(state, (r) => resolveRound(r, guess)),
+        ...withCurrentRound(state, (r) => resolveRound(r, guess, scoringVersionFor(state.date))),
         phase: "reveal",
       })
       setAppPhase("reveal")

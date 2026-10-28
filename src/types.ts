@@ -8,6 +8,8 @@ export interface SeedObject {
   lng: number
   difficulty: Difficulty
   notes?: string
+  /** Scoring v2 scale in km (how spread out the answer's region is); from the seed pipeline */
+  scaleKm?: number
 }
 
 export interface MetObject {
